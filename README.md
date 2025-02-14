@@ -134,21 +134,26 @@ xychart-beta
 
 ### 5. Incident Flow Analysis
 ```mermaid
-sankey-beta
-    Food Safety Incidents,1364 -> High Risk,919
-    Food Safety Incidents,1364 -> Medium Risk,255
-    Food Safety Incidents,1364 -> Low Risk,190
+flowchart LR
+    FSI[Food Safety Incidents\n1364 total] --> HR[High Risk\n919]
+    FSI --> MR[Medium Risk\n255]
+    FSI --> LR[Low Risk\n190]
     
-    High Risk,919 -> Product Contamination,530
-    High Risk,919 -> Allergen Issues,372
-    High Risk,919 -> Other High Risk,17
+    HR --> PC[Product Contamination\n530]
+    HR --> AI[Allergen Issues\n372]
+    HR --> OHR[Other High Risk\n17]
     
-    Medium Risk,255 -> No Inspection,144
-    Medium Risk,255 -> Misbranding,76
-    Medium Risk,255 -> Other Medium,35
+    MR --> NI[No Inspection\n144]
+    MR --> MB[Misbranding\n76]
+    MR --> OM[Other Medium\n35]
     
-    Low Risk,190 -> Import Violations,63
-    Low Risk,190 -> Minor Issues,127
+    LR --> IV[Import Violations\n63]
+    LR --> MI[Minor Issues\n127]
+
+    style FSI fill:#f96,stroke:#333,stroke-width:2px
+    style HR fill:#f66,stroke:#333,stroke-width:2px
+    style MR fill:#ff9,stroke:#333,stroke-width:2px
+    style LR fill:#9f9,stroke:#333,stroke-width:2px
 ```
 
 ### 6. Regulatory System Architecture
