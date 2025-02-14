@@ -75,16 +75,30 @@
   },
   "risk_patterns": {
     "risk_levels": {
-      "High - Class I": 19
+      "High - Class I": 919,
+      "Low - Class II": 255,
+      "Public Health Alert": 118,
+      "Marginal - Class III": 72
     },
     "top_recall_reasons": {
-      "Product Contamination": 10,
-      "Misbranding, Unreported Allergens": 4,
-      "Produced Without Benefit of Inspection": 2,
-      "Processing Defect, Product Contamination": 2,
-      "Import Violation": 1
+      "Product Contamination": 530,
+      "Misbranding, Unreported Allergens": 372,
+      "Produced Without Benefit of Inspection": 144,
+      "Misbranding": 76,
+      "Import Violation": 63
     },
-    "state_distribution": {}
+    "state_distribution": {
+      "California": 211,
+      "Texas": 168,
+      "New York": 143,
+      "Pennsylvania": 125,
+      "Illinois": 122,
+      "Florida": 103,
+      "New Jersey": 101,
+      "Washington": 93,
+      "Ohio": 86,
+      "Virginia": 80
+    }
   },
   "obesity_trends": {
     "yearly_rates": {

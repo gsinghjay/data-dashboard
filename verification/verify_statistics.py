@@ -36,6 +36,23 @@ class DataVerifier:
             print(f"Error loading datasets: {e}")
             raise
 
+    def get_csv_headers(self) -> Dict[str, List[str]]:
+        """Get headers from all CSV files in the processed directory"""
+        headers = {}
+        try:
+            for file_path in self.base_path.glob('*.csv'):
+                if file_path.name.endswith('.old'):  # Skip backup files
+                    continue
+                try:
+                    # Read just the header row
+                    df = pd.read_csv(file_path, nrows=0)
+                    headers[file_path.name] = list(df.columns)
+                except Exception as e:
+                    print(f"Error reading headers from {file_path.name}: {e}")
+        except Exception as e:
+            print(f"Error accessing processed directory: {e}")
+        return headers
+
     def analyze_dataset(self, name: str, df: pd.DataFrame) -> Dict[str, Any]:
         """Generate basic statistics for a dataset"""
         return {
@@ -184,13 +201,13 @@ class DataVerifier:
         risk_levels = recalls_df['risk_level'].value_counts().to_dict()
         
         # Most common recall reasons
-        recall_reasons = recalls_df['field_recall_reason'].value_counts().head(5).to_dict()
+        recall_reasons = recalls_df['recall_reason'].value_counts().head(5).to_dict()
         
         # Geographic distribution
         state_distribution = {}
         for states in recalls_df['states'].dropna():
             if isinstance(states, str):
-                for state in states.split(','):
+                for state in states.split('|'):  # Changed from comma to pipe since that's how we store it
                     state = state.strip()
                     if state != 'Nationwide':
                         state_distribution[state] = state_distribution.get(state, 0) + 1
@@ -350,10 +367,19 @@ Generated: {timestamp}
         # Start with basic report
         report = self.generate_markdown_report()
         
+        # Add headers section
+        headers = self.get_csv_headers()
+        headers_section = "\n## CSV Headers\n\n"
+        for filename, cols in headers.items():
+            headers_section += f"### {filename}\n"
+            for i, col in enumerate(cols, 1):
+                headers_section += f"{i}. {col}\n"
+            headers_section += "\n"
+        
         # Add correlation analysis section
-        correlations = self.results['temporal_correlations']
-        risk_patterns = self.results['risk_patterns']
-        obesity_trends = self.results['obesity_trends']
+        correlations = self.results.get('temporal_correlations', {})
+        risk_patterns = self.results.get('risk_patterns', {})
+        obesity_trends = self.results.get('obesity_trends', {})
         
         correlation_section = """
 ## Correlation Analysis
@@ -361,11 +387,15 @@ Generated: {timestamp}
 ### Food Safety Regulations vs Obesity Rates
 """
         for metric, data in correlations.items():
+            if data is None:
+                continue
+            correlation = data.get('correlation')
+            p_value = data.get('p_value')
             correlation_section += f"""
 #### {metric.replace('_', ' ').title()} vs Obesity Rate
-- Correlation Coefficient: {data['correlation']:.3f if data['correlation'] is not None else 'Insufficient data'}
-- Statistical Significance (p-value): {data['p_value']:.3f if data['p_value'] is not None else 'Not applicable'}
-- Time Period Analyzed: {data['year_range']} ({data['years_analyzed']} years)
+- Correlation Coefficient: {f"{correlation:.3f}" if correlation is not None else "Insufficient data"}
+- Statistical Significance (p-value): {f"{p_value:.3f}" if p_value is not None else "Not applicable"}
+- Time Period Analyzed: {data.get('year_range', 'Unknown')} ({data.get('years_analyzed', 0)} years)
 """
 
         risk_section = """
@@ -393,7 +423,7 @@ Generated: {timestamp}
             obesity_section += f"- {state}: {rate:.1f}%\n"
 
         # Combine all sections
-        return report + correlation_section + risk_section + obesity_section
+        return report + headers_section + correlation_section + risk_section + obesity_section
 
 def main():
     """Main execution function"""
