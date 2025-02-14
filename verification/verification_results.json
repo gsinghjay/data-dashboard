@@ -1,0 +1,137 @@
+{
+  "fda": {
+    "total": 3971,
+    "technical_effects": {
+      "FLAVOR": 3077,
+      "TEXTURE": 292,
+      "PROCESSING": 222,
+      "NUTRIENT": 189,
+      "COLOR": 128,
+      "PRESERVATIVE": 114
+    },
+    "cas_validation_rate": 82.54847645429363,
+    "year_range": {
+      "start": 1990.0,
+      "end": 1997.0
+    }
+  },
+  "gras": {
+    "total": 1219,
+    "response_distribution": {
+      "no questions": 911,
+      "cease to evaluate": 200,
+      "pending": 92,
+      "other": 16
+    },
+    "validation_rates": {
+      "filing_dates": 55.45529122231338,
+      "closure_dates": 92.45283018867924
+    },
+    "year_range": {
+      "start": 1998.0,
+      "end": 2019.0
+    }
+  },
+  "obesity": {
+    "who": {
+      "total_records": 20790,
+      "year_range": {
+        "start": 1990,
+        "end": 2022
+      }
+    },
+    "cdc": {
+      "total_records": 104272,
+      "year_range": {
+        "start": 2011,
+        "end": 2023
+      },
+      "obesity_rates": {
+        "2011": 31.476523047168797,
+        "2023": 37.36295437783163,
+        "change": 5.88643133066283
+      }
+    }
+  },
+  "temporal_correlations": {
+    "fda_approvals": {
+      "correlation": null,
+      "p_value": null,
+      "years_analyzed": 0,
+      "year_range": "Insufficient data for correlation"
+    },
+    "gras_notices": {
+      "correlation": null,
+      "p_value": null,
+      "years_analyzed": 0,
+      "year_range": "Insufficient data for correlation"
+    },
+    "recalls": {
+      "correlation": null,
+      "p_value": null,
+      "years_analyzed": 0,
+      "year_range": "Insufficient data for correlation"
+    }
+  },
+  "risk_patterns": {
+    "risk_levels": {
+      "High - Class I": 19
+    },
+    "top_recall_reasons": {
+      "Product Contamination": 10,
+      "Misbranding, Unreported Allergens": 4,
+      "Produced Without Benefit of Inspection": 2,
+      "Processing Defect, Product Contamination": 2,
+      "Import Violation": 1
+    },
+    "state_distribution": {}
+  },
+  "obesity_trends": {
+    "yearly_rates": {
+      "2011-01-01": 31.476523047168797,
+      "2012-01-01": 29.029325,
+      "2013-01-01": 31.61874257318786,
+      "2014-01-01": 29.419445794846865,
+      "2015-01-01": 31.912972517637147,
+      "2016-01-01": 29.85082595163993,
+      "2017-01-01": 31.066712628761458,
+      "2018-01-01": 30.444787363304982,
+      "2019-01-01": 32.77924653555721,
+      "2020-01-01": 30.462651772705197,
+      "2021-01-01": 31.213404008132443,
+      "2022-01-01": 31.034662503002643,
+      "2023-01-01": 37.36295437783163
+    },
+    "yoy_changes": {
+      "2011-01-01": NaN,
+      "2012-01-01": -7.774677157008658,
+      "2013-01-01": 8.92000614271209,
+      "2014-01-01": -6.955674386007871,
+      "2015-01-01": 8.47577734869176,
+      "2016-01-01": -6.461781536826583,
+      "2017-01-01": 4.07320949541341,
+      "2018-01-01": -2.001902399163724,
+      "2019-01-01": 7.6678452189353985,
+      "2020-01-01": -7.06726056176763,
+      "2021-01-01": 2.464500599057917,
+      "2022-01-01": -0.5726434229449295,
+      "2023-01-01": 20.39104460767607
+    },
+    "state_extremes": {
+      "highest": {
+        "NH": 39.190173410404626,
+        "AK": 39.17307692307692,
+        "MT": 39.16011904761905,
+        "ME": 38.86075268817204,
+        "ND": 38.65698324022347
+      },
+      "lowest": {
+        "PR": 28.770748299319727,
+        "OK": 34.56758241758242,
+        "MO": 34.70282485875706,
+        "WV": 35.06296296296296,
+        "NC": 35.46857142857143
+      }
+    }
+  }
+}
