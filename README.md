@@ -3,6 +3,10 @@
 ## Essential Question
 How have U.S. food safety regulations since 2011 impacted public health outcomes and regulatory effectiveness?
 
+## Perplexity
+- [Fact Check Against 21 Sources](https://www.perplexity.ai/search/search-the-web-and-compare-my-zyTkVGQKQVy0Z0iaRmhOrQ)
+- [Generated Page](https://www.perplexity.ai/page/food-safety-regulation-impact-.ssF8y.eTYWGfxPPkwTzQw)
+
 ## Executive Summary
 Our comprehensive analysis of 2011-2019 reveals a complex regulatory landscape. While approximately 3,000 chemicals entered the food supply through GRAS self-determinations, FSMA implementation strengthened oversight through mandatory controls. Analysis of 104,272 CDC records and 20,790 WHO observations shows obesity rates increased from 31.48% to 35.2%, suggesting multiple contributing factors beyond regulatory frameworks.
 
