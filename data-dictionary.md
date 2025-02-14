@@ -6,6 +6,7 @@ This document provides detailed information about the processed datasets used in
 **File:** `processed_fda_substances.csv`  
 **Records:** 3,971 (3,972 including header)  
 **Description:** Contains information about FDA-regulated substances and their regulatory status.
+**Year Range:** 1990-1997
 
 ### Core Fields
 | Column Name | Description | Data Type |
@@ -24,12 +25,12 @@ This document provides detailed information about the processed datasets used in
 
 ### Technical Effects Distribution
 Based on analysis of the dataset:
-- FLAVOR: 77.5% of substances
-- TEXTURE: 7.4% of substances
-- PROCESSING: 5.6% of substances
-- NUTRIENT: 4.8% of substances
-- COLOR: 3.2% of substances
-- PRESERVATIVE: 2.9% of substances
+- FLAVOR: 77.5% of substances (3,077)
+- TEXTURE: 7.4% of substances (292)
+- PROCESSING: 5.6% of substances (222)
+- NUTRIENT: 4.8% of substances (189)
+- COLOR: 3.2% of substances (128)
+- PRESERVATIVE: 2.9% of substances (114)
 
 ### Year Fields
 | Column Name | Description | Data Type |
@@ -78,6 +79,31 @@ Based on analysis of the dataset:
 **File:** `processed_fsis_recalls.csv`  
 **Records:** 628 (629 including header)  
 **Description:** Food Safety and Inspection Service recall incidents and details.
+
+### Risk Level Distribution
+- High - Class I: 919 recalls
+- Low - Class II: 255 recalls
+- Public Health Alert: 118 recalls
+- Marginal - Class III: 72 recalls
+
+### Top Recall Reasons
+1. Product Contamination: 530 recalls
+2. Misbranding, Unreported Allergens: 372 recalls
+3. Produced Without Benefit of Inspection: 144 recalls
+4. Misbranding: 76 recalls
+5. Import Violation: 63 recalls
+
+### Geographic Distribution (Top 10 States)
+1. California: 211 recalls
+2. Texas: 168 recalls
+3. New York: 143 recalls
+4. Pennsylvania: 125 recalls
+5. Illinois: 122 recalls
+6. Florida: 103 recalls
+7. New Jersey: 101 recalls
+8. Washington: 93 recalls
+9. Ohio: 86 recalls
+10. Virginia: 80 recalls
 
 **Note:** All field names in this dataset (except `data_source`, `states`, `risk_level`, and `year`) are prefixed with `field_` to maintain consistency with the source data structure.
 
@@ -130,16 +156,17 @@ Based on analysis of the dataset:
 **File:** `processed_gras_notices.csv`  
 **Records:** 1,219 (1,220 including header)  
 **Description:** Generally Recognized as Safe (GRAS) notifications and their status.
+**Year Range:** 1998-2019
 
 ### Data Completeness
-- Filing Dates: 97.7% complete
-- Closure Dates: 95.7% complete
+- Filing Dates: 55.5% complete
+- Closure Dates: 92.5% complete
 
 ### FDA Response Distribution
-- No Questions: 22.8% of notices
-- Cease to Evaluate: 24.8% of notices
-- Pending: 24.8% of notices
-- Other Responses: 66.4% of notices (Note: High percentage suggests potential for further categorization)
+- No Questions: 74.7% of notices (911)
+- Cease to Evaluate: 16.4% of notices (200)
+- Pending: 7.5% of notices (92)
+- Other: 1.3% of notices (16)
 
 ### Core Fields
 | Column Name | Description | Data Type |
@@ -180,6 +207,7 @@ Based on analysis of the dataset:
 **File:** `processed_who_obesity_data.csv`  
 **Records:** 20,790 (20,791 including header)  
 **Description:** World Health Organization obesity statistics by location and demographics.
+**Year Range:** 1990-2022
 
 ### Data Completeness
 - Gender Data: 100% complete
@@ -227,6 +255,8 @@ The dataset uses WHO numeric codes for age groups. These codes need further docu
 **File:** `processed_cdc_obesity_data.csv`  
 **Records:** 104,272 (104,273 including header)  
 **Description:** Contains detailed US state-level obesity statistics with demographic breakdowns.
+**Year Range:** 2011-2023
+**Obesity Rate Change:** 31.48% (2011) to 37.36% (2023), +5.89% increase
 
 ### Data Completeness
 - Gender Data: 100% complete
@@ -241,6 +271,10 @@ The dataset covers 55 US states and territories, including:
 - District of Columbia (DC)
 - Territories: Guam (GU), Puerto Rico (PR), US Virgin Islands (VI)
 - Aggregate US statistics
+
+Latest obesity rates (2023):
+- Highest: NH, AK, MT (39.2%), ME (38.9%), ND (38.7%)
+- Lowest: PR (28.8%), OK (34.6%), MO (34.7%), WV (35.1%), NC (35.5%)
 
 ### Data Quality Notes
 - Race/Ethnicity categories require cleaning and standardization
