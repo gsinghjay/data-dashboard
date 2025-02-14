@@ -1,6 +1,20 @@
 # CHANGELOG
 
 
+## v1.0.0 (2025-02-14)
+
+### Features
+
+- Add detailed statistical analysis, 15+ new visualizations, data sources, and methodology
+  ([`48a1ebc`](https://github.com/gsinghjay/data-dashboard/commit/48a1ebc3e89043fc62d09a70d928a76e02af9088))
+
+BREAKING CHANGE: restructure README with comprehensive food safety analysis
+
+### Breaking Changes
+
+- Restructure README with comprehensive food safety analysis
+
+
 ## v0.1.0 (2025-02-14)
 
 ### Chores
