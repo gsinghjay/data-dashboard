@@ -1,7 +1,80 @@
 # CHANGELOG
 
 
+## v1.1.0 (2025-02-21)
+
+### Build System
+
+- **deps**: Add d3 and topojson-client dependencies
+  ([`e9fac4d`](https://github.com/gsinghjay/data-dashboard/commit/e9fac4d85244df1ca0e028dcfd844391757e0ab4))
+
+### Chores
+
+- **assets**: Add public directory and assets
+  ([`d540aba`](https://github.com/gsinghjay/data-dashboard/commit/d540abaf33f05a444bcaa5d4ce14a54ead71fa68))
+
+- **cleanup**: Add remaining source files and assets
+  ([`3be5560`](https://github.com/gsinghjay/data-dashboard/commit/3be55601aa4c94c0d502da17ec98f79c3424dd8f))
+
+- **deps**: Add bootstrap, d3, and react-router dependencies
+  ([`268e404`](https://github.com/gsinghjay/data-dashboard/commit/268e4041b9e026535f8fd164741b18ba9bd2579a))
+
+- **git**: Add comprehensive gitignore files
+  ([`5fcdcbb`](https://github.com/gsinghjay/data-dashboard/commit/5fcdcbb21ce32684337bee691ccfbb78fdf31621))
+
+- **lint**: Add eslint configuration
+  ([`540d196`](https://github.com/gsinghjay/data-dashboard/commit/540d1961743dd4479e1ee28174ec113da9697e35))
+
+### Code Style
+
+- Add custom styles and bootstrap overrides
+  ([`1f5ebed`](https://github.com/gsinghjay/data-dashboard/commit/1f5ebedbf78e4c0c47e2d0a604364422e99f726c))
+
+### Documentation
+
+- **readme**: Add explanatory text for data visualizations feat: enhance diagram context and
+  correlations
+  ([`718ab3c`](https://github.com/gsinghjay/data-dashboard/commit/718ab3c40e7cd119dd43afedc8eb73f5fc14bef6))
+
+- **readme**: Updated links to fact check by perplexity
+  ([`6aa1ba3`](https://github.com/gsinghjay/data-dashboard/commit/6aa1ba39aceb592110c0063e65f99ea94026435c))
+
+### Features
+
+- **charts**: Add reusable d3 bar chart component
+  ([`1076657`](https://github.com/gsinghjay/data-dashboard/commit/10766573d8c8961963e8a2fee244002d33e83bcd))
+
+- **frontend**: Initialize vite react project structure
+  ([`9f987e2`](https://github.com/gsinghjay/data-dashboard/commit/9f987e2f2a48cfa27233cbe971f9177ef85256b9))
+
+- **layout**: Implement navbar and base layout components
+  ([`ac6f742`](https://github.com/gsinghjay/data-dashboard/commit/ac6f7423da9917f557e788c1fd9361917790099c))
+
+- **pages**: Add FDA substances page with sample data
+  ([`836babc`](https://github.com/gsinghjay/data-dashboard/commit/836babc3f138cc593ad8aadf50308b7e9ba6e6a6))
+
+- **pages**: Add obesity data page with world map integration
+  ([`62ddce9`](https://github.com/gsinghjay/data-dashboard/commit/62ddce967c3fd60205923155cc7d47754f420d79))
+
+- **router**: Implement react-router with basic routes
+  ([`ca44c89`](https://github.com/gsinghjay/data-dashboard/commit/ca44c898db72d563d48724d06ab1fe36c15f4465))
+
+- **viz**: Add interactive world map visualization for obesity data
+  ([`b899eab`](https://github.com/gsinghjay/data-dashboard/commit/b899eab9189ef89a197fb0ad71d4c1545ca677a5))
+
+### Refactoring
+
+- **routes**: Integrate obesity data visualization page
+  ([`0ab3624`](https://github.com/gsinghjay/data-dashboard/commit/0ab36249f0326e00a5a8dcd0c7e8fe0dd60a61ca))
+
+
 ## v1.0.0 (2025-02-14)
+
+### Documentation
+
+- **readme**: Enhance data visualization and analysis presentation feat: fix Mermaid diagram syntax
+  and add comprehensive data sources
+  ([`560064f`](https://github.com/gsinghjay/data-dashboard/commit/560064fc181242a3a7b79fa31cded921be39cf88))
 
 ### Features
 
