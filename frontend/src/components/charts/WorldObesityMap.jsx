@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import { feature } from 'topojson-client';
 import styles from './WorldObesityMap.module.css';
+import { processWHOObesity } from '../../utils/dataProcessing';
 
 const WorldObesityMap = () => {
   const svgRef = useRef(null);
@@ -10,6 +11,8 @@ const WorldObesityMap = () => {
   const [selectedGender, setSelectedGender] = useState('TOTAL');
   const [obesityData, setObesityData] = useState(null);
   const [worldData, setWorldData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Load the world map data
   useEffect(() => {
@@ -18,10 +21,10 @@ const WorldObesityMap = () => {
         const response = await fetch('https://unpkg.com/world-atlas@2.0.2/countries-110m.json');
         const data = await response.json();
         const features = feature(data, data.objects.countries);
-        console.log('World map data loaded:', features.features[0]); // Log first feature to check structure
         setWorldData(features);
       } catch (error) {
         console.error('Error loading world map data:', error);
+        setError('Failed to load world map data. Please try again later.');
       }
     };
 
@@ -32,39 +35,40 @@ const WorldObesityMap = () => {
   useEffect(() => {
     const loadObesityData = async () => {
       try {
+        setLoading(true);
         const response = await fetch('/src/data/processed_who_obesity_data.csv');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const csvText = await response.text();
-        const parsedData = d3.csvParse(csvText);
-        console.log('First row of CSV data:', parsedData[0]); // Log first row to check structure
+        const rawData = d3.csvParse(csvText);
+        
+        // Process the data using our utility function
+        const processedData = rawData.map(processWHOObesity);
         
         // Process the data into a map for easier lookup
         const dataMap = new Map();
-        parsedData.forEach(d => {
-          if (d.DIM_SEX === selectedGender && d.DIM_TIME === selectedYear.toString()) {
+        processedData.forEach(d => {
+          if (d.DIM_SEX === selectedGender && d.year.getFullYear() === selectedYear) {
             // Convert the country code to a number since topojson uses numeric IDs
             const countryCode = parseInt(d.DIM_GEO_CODE_M49);
             if (!isNaN(countryCode)) {
               dataMap.set(countryCode, {
-                rate: +d.RATE_PER_100_N,
-                countryName: d.GEO_NAME_SHORT
+                rate: d.obesity_rate,
+                countryName: d.GEO_NAME_SHORT,
+                confidenceLower: d.confidence_lower,
+                confidenceUpper: d.confidence_upper
               });
             }
           }
         });
         
-        console.log('Processed data map size:', dataMap.size); // Log map size
-        if (dataMap.size > 0) {
-          console.log('Sample data entry:', Array.from(dataMap.entries())[0]); // Log first entry
-        } else {
-          console.log('No data found for selected year and gender');
-        }
-        
         setObesityData(dataMap);
+        setLoading(false);
       } catch (error) {
         console.error('Error loading obesity data:', error);
+        setError('Failed to load obesity data. Please try again later.');
+        setLoading(false);
       }
     };
 
@@ -81,10 +85,11 @@ const WorldObesityMap = () => {
     // Clear existing SVG content
     d3.select(svgRef.current).selectAll('*').remove();
 
-    // Create SVG
+    // Create SVG with responsive container
     const svg = d3.select(svgRef.current)
-      .attr('width', width)
-      .attr('height', height);
+      .attr('viewBox', `0 0 ${width} ${height}`)
+      .attr('preserveAspectRatio', 'xMidYMid meet')
+      .attr('class', 'rounded-0');
 
     // Define map projection
     const projection = d3.geoMercator()
@@ -106,40 +111,40 @@ const WorldObesityMap = () => {
       .attr('d', path)
       .attr('class', styles.country)
       .attr('fill', d => {
-        // Convert the feature ID to a number to match with our data
         const countryId = parseInt(d.id);
         const countryData = obesityData.get(countryId);
-        console.log('Country ID:', countryId, 'Name:', d.properties.name, 'Data:', countryData); // Log each country's data match
-        return countryData ? colorScale(countryData.rate) : '#ccc';
+        return countryData ? colorScale(countryData.rate) : '#e9ecef';
       })
       .attr('stroke', '#fff')
       .attr('stroke-width', 0.5)
       .on('mouseover', (event, d) => {
-        // Convert the feature ID to a number to match with our data
         const countryId = parseInt(d.id);
         const countryData = obesityData.get(countryId);
         const tooltip = d3.select('body').append('div')
-          .attr('class', styles.tooltip)
+          .attr('class', 'tooltip bg-dark text-light p-2 rounded-0')
           .style('position', 'absolute')
-          .style('background', 'white')
-          .style('padding', '8px')
-          .style('border', '1px solid #ccc')
-          .style('border-radius', '4px')
-          .style('pointer-events', 'none')
-          .style('opacity', 0);
+          .style('opacity', 0)
+          .style('z-index', 1000);
 
         tooltip.transition()
           .duration(200)
           .style('opacity', 0.9);
 
         tooltip.html(countryData 
-          ? `${countryData.countryName}: ${countryData.rate.toFixed(1)}%`
-          : `${d.properties.name || 'Unknown'}: No data`)
+          ? `<div class="small">
+               <strong>${countryData.countryName}</strong><br/>
+               Obesity Rate: ${countryData.rate.toFixed(1)}%<br/>
+               95% CI: [${countryData.confidenceLower.toFixed(1)}, ${countryData.confidenceUpper.toFixed(1)}]
+             </div>`
+          : `<div class="small">
+               <strong>${d.properties.name || 'Unknown'}</strong><br/>
+               No data available
+             </div>`)
           .style('left', (event.pageX + 10) + 'px')
           .style('top', (event.pageY - 28) + 'px');
       })
       .on('mouseout', () => {
-        d3.selectAll(`.${styles.tooltip}`).remove();
+        d3.selectAll('.tooltip').remove();
       });
 
     // Create legend
@@ -150,8 +155,9 @@ const WorldObesityMap = () => {
       const legendHeight = 20;
       
       const legendSvg = d3.select(legendRef.current)
-        .attr('width', legendWidth)
-        .attr('height', legendHeight);
+        .attr('viewBox', `0 0 ${legendWidth} ${legendHeight}`)
+        .attr('preserveAspectRatio', 'xMidYMid meet')
+        .attr('class', 'rounded-0');
 
       // Create gradient
       const gradient = legendSvg.append('defs')
@@ -179,34 +185,72 @@ const WorldObesityMap = () => {
 
   }, [worldData, obesityData]);
 
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center h-100">
+        <div className="spinner-border text-primary rounded-0" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="alert alert-danger rounded-0 m-3 d-flex align-items-center" role="alert">
+        <i className="bi bi-exclamation-triangle-fill me-2"></i>
+        {error}
+      </div>
+    );
+  }
+
   return (
-    <div className={styles['world-obesity-map']}>
-      <div className={styles.controls}>
-        <div className={styles['year-selector']}>
-          <label>Year: {selectedYear}</label>
+    <div className="d-flex flex-column h-100">
+      <div className="controls bg-light rounded-0 p-3 mb-3 d-flex gap-4 align-items-center">
+        <div className="d-flex align-items-center gap-2">
+          <i className="bi bi-calendar-event"></i>
+          <label className="form-label mb-0">Year: {selectedYear}</label>
           <input
             type="range"
+            className="form-range ms-2"
+            style={{ width: '200px' }}
             min="1990"
             max="2022"
             value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value))}
           />
         </div>
-        <div className={styles['gender-selector']}>
-          <label>Gender:</label>
-          <select value={selectedGender} onChange={(e) => setSelectedGender(e.target.value)}>
+        <div className="d-flex align-items-center gap-2">
+          <i className="bi bi-people"></i>
+          <label className="form-label mb-0">Gender:</label>
+          <select 
+            className="form-select form-select-sm rounded-0" 
+            style={{ width: '100px' }}
+            value={selectedGender} 
+            onChange={(e) => setSelectedGender(e.target.value)}
+          >
             <option value="TOTAL">Total</option>
             <option value="MALE">Male</option>
             <option value="FEMALE">Female</option>
           </select>
         </div>
       </div>
-      <div className={styles['map-container']}>
-        <svg ref={svgRef}></svg>
+      <div className="flex-grow-1 position-relative">
+        <div className="map-container h-100">
+          <svg 
+            ref={svgRef}
+            style={{ width: '100%', height: '100%', minHeight: '400px' }}
+            className="rounded-0"
+          />
+        </div>
       </div>
-      <div className={styles.legend}>
-        <svg ref={legendRef}></svg>
-        <div className={styles['legend-labels']}>
+      <div className="legend mt-3 d-flex flex-column align-items-center">
+        <svg 
+          ref={legendRef}
+          style={{ width: '200px', height: '20px' }}
+          className="rounded-0"
+        />
+        <div className="d-flex justify-content-between w-100 mt-1 text-muted small">
           <span>0%</span>
           <span>20%</span>
           <span>40%</span>
