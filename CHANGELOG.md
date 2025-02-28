@@ -1,6 +1,20 @@
 # CHANGELOG
 
 
+## v1.3.0 (2025-02-28)
+
+### Features
+
+- **charts**: Add D3.js visualization components for food safety dashboard
+  ([`62deef4`](https://github.com/gsinghjay/data-dashboard/commit/62deef42af132b9872b1ead5b6f2e75db8265754))
+
+- **routing**: Update App.jsx to include Dashboard as home page
+  ([`1673a1c`](https://github.com/gsinghjay/data-dashboard/commit/1673a1c6c247e895d82c0c366181accb2b352f8a))
+
+- **ui**: Add main Dashboard component with tabbed navigation
+  ([`d7ca5d3`](https://github.com/gsinghjay/data-dashboard/commit/d7ca5d3f437a7b70301ef2319c42a8f2d1106fa3))
+
+
 ## v1.2.0 (2025-02-28)
 
 ### Bug Fixes
