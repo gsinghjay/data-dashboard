@@ -1,6 +1,22 @@
 # CHANGELOG
 
 
+## v1.2.0 (2025-02-28)
+
+### Bug Fixes
+
+- **charts**: Improve bar chart value label visibility
+  ([`1d53c85`](https://github.com/gsinghjay/data-dashboard/commit/1d53c855af8684d76847240687ba0286eab001ae))
+
+### Features
+
+- **charts**: Enhance world obesity map with improved data processing
+  ([`3db000d`](https://github.com/gsinghjay/data-dashboard/commit/3db000d604672c82922e867d2fc0d8d7f55f89f0))
+
+- **data**: Add data processing utilities and CSV datasets
+  ([`701e4ac`](https://github.com/gsinghjay/data-dashboard/commit/701e4ac6b709ddc2a1a910151048ccf3ff44224b))
+
+
 ## v1.1.0 (2025-02-21)
 
 ### Build System
