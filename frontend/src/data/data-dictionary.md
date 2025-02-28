@@ -1,353 +1,456 @@
 # Data Dictionary
 
-This document provides detailed information about the processed datasets used in the data dashboard project.
+This document provides detailed information about the datasets used in the data dashboard project. The data is now stored in a SQLite database instead of CSV files.
 
-## FDA Substances Dataset
-**File:** `processed_fda_substances.csv`  
-**Records:** 3,971 (3,972 including header)  
+## Database Information
+**Database File:** `food_safety_dashboard.db`  
+**Location:** `etl/data/db/`  
+**Size:** ~62MB  
+**Tables:** 5 main tables, 2 views  
+**Indexes:** 7 indexes for optimized queries
+
+### Database Tables
+| Table Name | Description | Records |
+|------------|-------------|---------|
+| fda_substances | FDA-regulated substances and their regulatory status | 3,971 |
+| fsis_recalls | Food Safety and Inspection Service recall incidents | 975 |
+| gras_notices | Generally Recognized as Safe (GRAS) notifications | 1,219 |
+| who_obesity_data | WHO obesity statistics by location and demographics | 20,790 |
+| cdc_obesity_data | US state-level obesity statistics with demographic breakdowns | 100,464 |
+
+### Database Views
+| View Name | Description |
+|-----------|-------------|
+| substances_by_category | Aggregated count of substances by category |
+| obesity_trend_us | US obesity trend data by year |
+
+### Database Indexes
+| Index Name | Table | Column(s) |
+|------------|-------|-----------|
+| idx_fda_substances_year | fda_substances | approval_year |
+| idx_fsis_recalls_year | fsis_recalls | year |
+| idx_gras_notices_date | gras_notices | "Date of filing" |
+| idx_who_obesity_year | who_obesity_data | DIM_TIME |
+| idx_who_obesity_country | who_obesity_data | GEO_NAME_SHORT |
+| idx_cdc_obesity_year | cdc_obesity_data | yearstart |
+| idx_cdc_obesity_location | cdc_obesity_data | locationabbr |
+
+## FDA Substances Table
+**Table:** `fda_substances`  
+**Records:** 3,971  
 **Description:** Contains information about FDA-regulated substances and their regulatory status.
 **Year Range:** 1990-1997
 
+### Schema
+```sql
+CREATE TABLE IF NOT EXISTS "fda_substances" (
+  "cas_number" TEXT,
+  "substance_name" TEXT,
+  "other_names" TEXT,
+  "technical_effects" TEXT,
+  "Reg col01" TEXT,
+  "Reg col02" TEXT,
+  "Reg col03" TEXT,
+  "Reg col04" TEXT,
+  "Reg col05" TEXT,
+  "Reg col06" TEXT,
+  "Reg add01" TEXT,
+  "Reg add02" TEXT,
+  "Reg add03" TEXT,
+  "Reg add04" TEXT,
+  "Reg add05" TEXT,
+  "Reg add06" TEXT,
+  "Reg add07" TEXT,
+  "Reg add08" TEXT,
+  "Reg add09" TEXT,
+  "Reg add10" TEXT,
+  "Reg add11" TEXT,
+  "Reg add12" TEXT,
+  "Reg add13" TEXT,
+  "Reg add14" TEXT,
+  "Reg add16" TEXT,
+  "Reg add17" TEXT,
+  "Reg add18" TEXT,
+  "Reg add19" TEXT,
+  "Reg add20" TEXT,
+  "Reg prohibited189" TEXT,
+  "Reg Administrative" TEXT,
+  "regs Labeling & Standards " TEXT,
+  "FEMA No" TEXT,
+  "GRAS Pub No" TEXT,
+  "Most Recent GRAS Pub Update" TEXT,
+  "FEMA status" TEXT,
+  "JECFA Flavor Number" TEXT,
+  "data_source" TEXT,
+  "approval_year" REAL,
+  "category" TEXT
+);
+```
+
 ### Core Fields
 | Column Name | Description | Data Type |
 |------------|-------------|------------|
-| cas_reg_no_(or_other_id) | Chemical Abstracts Service Registry Number or alternative identifier | String |
-| substance | Name of the regulated substance | String |
-| other_names | Alternative names for the substance | String |
-| used_for_(technical_effect) | Technical purposes or effects of the substance (raw) | String |
-| technical_effects | Standardized list of technical effects (processed) | List[String] |
-| fema_no | Flavor and Extract Manufacturers Association number | String |
-| gras_pub_no | GRAS Publication Number | String |
-| most_recent_gras_pub_update | Date of most recent GRAS publication update | String |
-| fema_status | Current FEMA status | String |
-| jecfa_flavor_number | Joint FAO/WHO Expert Committee on Food Additives flavor number | String |
-| cas_reg_no | Standardized CAS Registry Number (Note: Currently stored in a non-standard format) | String |
+| cas_number | Chemical Abstracts Service Registry Number | TEXT |
+| substance_name | Name of the regulated substance | TEXT |
+| other_names | Alternative names for the substance | TEXT |
+| technical_effects | Technical purposes or effects of the substance (stored as JSON array) | TEXT |
+| category | Category of the substance (e.g., Flavor, Sweetener) | TEXT |
+| approval_year | Year the substance was approved | REAL |
+| data_source | Origin of the data (always 'FDA_SUBSTANCES') | TEXT |
 
 ### Technical Effects Distribution
 Based on analysis of the dataset:
-- FLAVOR: 77.5% of substances (3,077)
-- TEXTURE: 7.4% of substances (292)
-- PROCESSING: 5.6% of substances (222)
-- NUTRIENT: 4.8% of substances (189)
-- COLOR: 3.2% of substances (128)
-- PRESERVATIVE: 2.9% of substances (114)
+- Flavor: 76.3% of substances (3,028)
+- Other: 7.3% of substances (290)
+- Uncategorized: 4.6% of substances (183)
+- Preservative: 2.9% of substances (114)
+- Emulsifier: 2.8% of substances (112)
+- Nutrient: 2.3% of substances (92)
+- Stabilizer: 1.4% of substances (57)
+- Color: 1.2% of substances (49)
+- Sweetener: 0.6% of substances (23)
+- pH Control: 0.5% of substances (19)
 
-### Year Fields
-| Column Name | Description | Data Type |
-|------------|-------------|------------|
-| gras_pub_no_year | Extracted year from GRAS publication number | Integer |
-| most_recent_gras_pub_update_year | Extracted year from GRAS update | Integer |
-| reg_administrative_year | Extracted year from administrative info | Integer |
-| regs_labeling_&_standards_year | Extracted year from labeling standards | Integer |
-| approval_year | Final determined approval year | Integer |
+### Data Quality Notes
+- Technical effects are stored as JSON arrays and need to be parsed when used
+- Only 2 records have missing CAS numbers
+- All substance names are present
+- Some approval years are missing
 
-### Regulatory Fields
-| Column Name | Description | Data Type |
-|------------|-------------|------------|
-| reg_col01 through reg_col06 | Primary regulatory classifications | String |
-| reg_add01 through reg_add14, reg_add16 through reg_add20 | Additional regulatory information | String |
-| reg_prohibited189 | Prohibited substance status | String |
-| reg_administrative | Administrative regulatory information | String |
-| regs_labeling_&_standards | Labeling and standards information | String |
-
-### Metadata Fields
-| Column Name | Description | Data Type |
-|------------|-------------|------------|
-| data_source | Origin of the data (always 'FDA_SUBSTANCES') | String |
-| processed_timestamp | When the record was processed | DateTime |
-
-## FDA Approvals Summary Dataset
-**File:** `fda_approvals_by_year.csv`  
-**Records:** 33 (34 including header)  
-**Description:** Annual summary of FDA substance approvals and cumulative totals.
-
-### Fields
-| Column Name | Description | Data Type |
-|------------|-------------|------------|
-| year | Calendar year | Integer |
-| new_approvals | Number of new substances approved in the year | Float |
-| cumulative_approvals | Total approved substances up to and including the year | Float |
-| pct_change | Percentage change in cumulative approvals from previous year | Float |
-
-### Notes
-- Covers the period from 1990 to 2022
-- Shows significant approval activity from 1990-1997
-- No new approvals recorded after 1997
-- Final cumulative total (2,713) differs from the full substances dataset count (3,971)
-
-## FSIS Recalls Dataset
-**File:** `processed_fsis_recalls.csv`  
-**Records:** 628 (629 including header)  
+## FSIS Recalls Table
+**Table:** `fsis_recalls`  
+**Records:** 975  
 **Description:** Food Safety and Inspection Service recall incidents and details.
+**Year Range:** Recent years (primarily 2023)
+
+### Schema
+```sql
+CREATE TABLE IF NOT EXISTS "fsis_recalls" (
+  "title" TEXT,
+  "recall_number" TEXT,
+  "recall_date" TIMESTAMP,
+  "closed_date" TIMESTAMP,
+  "establishment" TEXT,
+  "risk_level_raw" TEXT,
+  "recall_reason" TEXT,
+  "recall_type" TEXT,
+  "related_to_outbreak" INTEGER,
+  "is_active" INTEGER,
+  "products" TEXT,
+  "processing_type" TEXT,
+  "states" TEXT,
+  "quantity_lbs" REAL,
+  "year" INTEGER,
+  "risk_level" TEXT,
+  "data_source" TEXT
+);
+```
 
 ### Risk Level Distribution
-- High - Class I: 919 recalls
-- Low - Class II: 255 recalls
-- Public Health Alert: 118 recalls
-- Marginal - Class III: 72 recalls
-
-### Top Recall Reasons
-1. Product Contamination: 530 recalls
-2. Misbranding, Unreported Allergens: 372 recalls
-3. Produced Without Benefit of Inspection: 144 recalls
-4. Misbranding: 76 recalls
-5. Import Violation: 63 recalls
-
-### Geographic Distribution (Top 10 States)
-1. California: 211 recalls
-2. Texas: 168 recalls
-3. New York: 143 recalls
-4. Pennsylvania: 125 recalls
-5. Illinois: 122 recalls
-6. Florida: 103 recalls
-7. New Jersey: 101 recalls
-8. Washington: 93 recalls
-9. Ohio: 86 recalls
-10. Virginia: 80 recalls
-
-**Note:** All field names in this dataset (except `data_source`, `states`, `risk_level`, and `year`) are prefixed with `field_` to maintain consistency with the source data structure.
+- High - Class I: Most common risk level
+- Low - Class II: Second most common
+- Public Health Alert: Used for some notices
+- Marginal - Class III: Least common
 
 ### Core Fields
 | Column Name | Description | Data Type |
 |------------|-------------|------------|
-| field_recall_number | Unique identifier for the recall | String |
-| field_recall_date | Date the recall was initiated | Date |
-| field_establishment | Name of the establishment issuing recall | String |
-| field_states | Raw state information | String |
-| field_product_items | Products subject to recall | String |
-| field_risk_level | Raw risk level information | String |
-| field_recall_classification | FDA recall classification | String |
-| field_recall_reason | Reason for the recall | String |
-| field_qty_recovered | Quantity of product recovered | Numeric |
-| field_active_notice | Whether the recall is currently active | Boolean |
-| field_closed_date | Date the recall was closed | Date |
-| field_year | Year from recall date | Integer |
-| year | Normalized year | Integer |
-| field_closed_year | Year from closure date | Integer |
+| title | Title of the recall notice | TEXT |
+| recall_number | Unique identifier for the recall | TEXT |
+| recall_date | Date the recall was initiated | TIMESTAMP |
+| closed_date | Date the recall was closed | TIMESTAMP |
+| establishment | Name of the establishment issuing recall | TEXT |
+| risk_level | Standardized risk level | TEXT |
+| risk_level_raw | Raw risk level information | TEXT |
+| recall_reason | Reason for the recall | TEXT |
+| states | States affected (stored as JSON array) | TEXT |
+| quantity_lbs | Quantity of product recalled in pounds | REAL |
+| year | Year from recall date | INTEGER |
+| data_source | Origin of the data (always 'FSIS_RECALLS') | TEXT |
 
-### Normalized Fields
-| Column Name | Description | Data Type |
-|------------|-------------|------------|
-| states | Standardized state information | List[String] |
-| risk_level | Standardized risk level | String |
+### Data Quality Notes
+- 110 records (11.3%) have missing quantity values
+- All recall numbers are present
+- States are stored as JSON arrays and need to be parsed when used
+- Dates are stored in proper timestamp format
 
-### Additional Fields
-| Column Name | Description | Data Type |
-|------------|-------------|------------|
-| field_title | Title of the recall notice | String |
-| field_recall_url | URL to the recall notice | String |
-| field_archive_recall | Archive status | Boolean |
-| field_company_media_contact | Company media contact information | String |
-| field_distro_list | Distribution list | String |
-| field_en_press_release | English press release | String |
-| field_labels | Product labels | String |
-| field_media_contact | Media contact information | String |
-| field_last_modified_date | Last modification date | Date |
-| field_press_release | Press release content | String |
-| field_processing | Processing information | String |
-| field_recall_type | Type of recall | String |
-| field_related_to_outbreak | Related outbreak information | Boolean |
-| field_summary | Summary of recall | String |
-| langcode | Language code | String |
-| field_has_spanish | Spanish version availability | Boolean |
-| data_source | Origin of the data (always 'FSIS_RECALLS') | String |
-
-## GRAS Notices Dataset
-**File:** `processed_gras_notices.csv`  
-**Records:** 1,219 (1,220 including header)  
+## GRAS Notices Table
+**Table:** `gras_notices`  
+**Records:** 1,219  
 **Description:** Generally Recognized as Safe (GRAS) notifications and their status.
 **Year Range:** 1998-2019
 
-### Data Completeness
-- Filing Dates: 55.5% complete
-- Closure Dates: 92.5% complete
-
-### FDA Response Distribution
-- No Questions: 74.7% of notices (911)
-- Cease to Evaluate: 16.4% of notices (200)
-- Pending: 7.5% of notices (92)
-- Other: 1.3% of notices (16)
+### Schema
+```sql
+CREATE TABLE IF NOT EXISTS "gras_notices" (
+  "GRAS Notice (GRN) No." TEXT,
+  "Substance" TEXT,
+  "Intended Use" TEXT,
+  "Basis" TEXT,
+  "Notifier" TEXT,
+  "Notifier Address" TEXT,
+  "Date of filing" TEXT,
+  "GRN Part 1" TEXT,
+  "GRN Part 2" TEXT,
+  "GRN Part 3" TEXT,
+  "GRN Part 4" TEXT,
+  "GRN Part 5" TEXT,
+  "GRN Part 6" TEXT,
+  "GRN Part 7" TEXT,
+  "Date of closure" TEXT,
+  "Date of correction letter" TEXT,
+  "FDA's Letter" TEXT,
+  "Date additional correspondence" TEXT,
+  "Additional correspondence" TEXT,
+  "Date additinoal correspondence 2" TEXT,
+  "Additional correspondence 2" TEXT,
+  "Date additional correspondence 3" TEXT,
+  "Additional correspondence 3" TEXT,
+  "Date additional correspondence 4" TEXT,
+  "Additional correspondence 4" TEXT,
+  "Resubmission" TEXT,
+  "Resubmitted" TEXT,
+  "Notes" TEXT,
+  "Related submission" TEXT,
+  "filing_year" REAL,
+  "data_source" TEXT
+);
+```
 
 ### Core Fields
 | Column Name | Description | Data Type |
 |------------|-------------|------------|
-| gras_notice_(grn)_no. | Original GRAS Notice Number | String |
-| grn_no | Normalized GRAS Notice Number | String |
-| substance | Name of the substance | String |
-| intended_use | Intended use in food | String |
-| basis | Basis for GRAS determination | String |
-| notifier | Company/entity submitting notice | String |
-| date_of_filing | Submission date | Date |
-| date_of_closure | Closure date | Date |
-| fda's_letter | FDA response letter reference | String |
-| filing_year | Year of filing | Integer |
-| fda_response | FDA's standardized response type | String |
+| GRAS Notice (GRN) No. | Original GRAS Notice Number (contains Excel formula artifacts) | TEXT |
+| Substance | Name of the substance | TEXT |
+| Intended Use | Intended use in food | TEXT |
+| Basis | Basis for GRAS determination | TEXT |
+| Notifier | Company/entity submitting notice | TEXT |
+| Date of filing | Submission date | TEXT |
+| Date of closure | Closure date | TEXT |
+| FDA's Letter | FDA response letter reference | TEXT |
+| filing_year | Year of filing | REAL |
+| data_source | Origin of the data (always 'GRAS_NOTICES') | TEXT |
 
-### Additional Fields
-| Column Name | Description | Data Type |
-|------------|-------------|------------|
-| notifier_address | Address of notifying entity | String |
-| grn_part_1 through grn_part_7 | Different parts of GRN submission | String |
-| date_of_correction_letter | Date of any correction letter | Date |
-| date_additional_correspondence | First additional correspondence date | Date |
-| additional_correspondence | First additional correspondence content | String |
-| date_additional_correspondence_2 | Second additional correspondence date | Date |
-| additional_correspondence_2 | Second additional correspondence content | String |
-| date_additional_correspondence_3 | Third additional correspondence date | Date |
-| additional_correspondence_3 | Third additional correspondence content | String |
-| date_additional_correspondence_4 | Fourth additional correspondence date | Date |
-| additional_correspondence_4 | Fourth additional correspondence content | String |
-| resubmission | Resubmission status | Boolean |
-| resubmitted | Resubmission information | String |
-| notes | Additional notes | String |
-| related_submission | Related submissions | String |
-| data_source | Origin of the data (always 'GRAS_NOTICES') | String |
+### Data Quality Notes
+- GRN numbers have Excel formula artifacts (=T("1")) that should be cleaned
+- Some fields contain HTML tags that should be properly rendered or stripped
+- All substance values are present
+- Filing years are properly calculated
 
-## WHO Obesity Data
-**File:** `processed_who_obesity_data.csv`  
-**Records:** 20,790 (20,791 including header)  
+## WHO Obesity Data Table
+**Table:** `who_obesity_data`  
+**Records:** 20,790  
 **Description:** World Health Organization obesity statistics by location and demographics.
 **Year Range:** 1990-2022
 
-### Data Completeness
-- Gender Data: 100% complete
-- Age Data: 100% complete
-- Confidence Intervals: 100% complete
+### Schema
+```sql
+CREATE TABLE IF NOT EXISTS "who_obesity_data" (
+  "IND_ID" TEXT,
+  "IND_CODE" TEXT,
+  "IND_UUID" TEXT,
+  "IND_PER_CODE" TEXT,
+  "DIM_TIME" INTEGER,
+  "DIM_TIME_TYPE" TEXT,
+  "DIM_GEO_CODE_M49" INTEGER,
+  "DIM_GEO_CODE_TYPE" TEXT,
+  "DIM_PUBLISH_STATE_CODE" TEXT,
+  "IND_NAME" TEXT,
+  "GEO_NAME_SHORT" TEXT,
+  "DIM_SEX" TEXT,
+  "DIM_AGE" TEXT,
+  "RATE_PER_100_N" REAL,
+  "RATE_PER_100_NL" REAL,
+  "RATE_PER_100_NU" REAL,
+  "data_source" TEXT
+);
+```
 
 ### Core Fields
 | Column Name | Description | Data Type |
 |------------|-------------|------------|
-| location | Country or region | String |
-| year | Year of measurement | Integer |
-| obesity_rate | Obesity rate per 100 people | Float |
-| confidence_lower | Lower bound of confidence interval | Float |
-| confidence_upper | Upper bound of confidence interval | Float |
-| DIM_SEX | Gender category | String |
-| DIM_AGE | Age group (Note: Uses WHO numeric codes, see Age Group Codes section) | String |
-| GEO_NAME_SHORT | Short geographical name | String |
-| RATE_PER_100_N | Rate per 100 people (nominal) | Float |
-| RATE_PER_100_NL | Rate per 100 people (lower bound) | Float |
-| RATE_PER_100_NU | Rate per 100 people (upper bound) | Float |
-| data_source | Origin of the data (always 'WHO_OBESITY') | String |
-
-### Age Group Codes
-The dataset uses WHO numeric codes for age groups. These codes need further documentation and standardization. Current observations show:
-- Codes range from 1 to 958
-- Appear to represent different age ranges and demographic groupings
-- Further documentation from WHO sources needed for complete interpretation
-- Data cleaning may be required to standardize age group representations
-
-### Metadata and Identification Fields
-| Column Name | Description | Data Type |
-|------------|-------------|------------|
-| IND_ID | Indicator ID | String |
-| IND_CODE | Indicator code | String |
-| IND_UUID | Unique identifier | String |
-| IND_PER_CODE | Period code | String |
-| DIM_TIME | Time dimension | String |
-| DIM_TIME_TYPE | Type of time measurement | String |
-| DIM_GEO_CODE_M49 | Geographic code (M49 standard) | String |
-| DIM_GEO_CODE_TYPE | Type of geographic code | String |
-| DIM_PUBLISH_STATE_CODE | Publication state code | String |
-| IND_NAME | Indicator name | String |
-
-## CDC US Obesity Dataset
-**File:** `processed_cdc_obesity_data.csv`  
-**Records:** 104,272 (104,273 including header)  
-**Description:** Contains detailed US state-level obesity statistics with demographic breakdowns.
-**Year Range:** 2011-2023
-**Obesity Rate Change:** 31.48% (2011) to 37.36% (2023), +5.89% increase
-
-### Data Completeness
-- Gender Data: 100% complete
-- Age Data: 85.2% complete
-- Race/Ethnicity Data: 100% complete
-- Income Data: 100% complete
-- Education Data: 89.7% complete
-
-### Geographic Coverage
-The dataset covers 55 US states and territories, including:
-- All 50 US states
-- District of Columbia (DC)
-- Territories: Guam (GU), Puerto Rico (PR), US Virgin Islands (VI)
-- Aggregate US statistics
-
-Latest obesity rates (2023):
-- Highest: NH, AK, MT (39.2%), ME (38.9%), ND (38.7%)
-- Lowest: PR (28.8%), OK (34.6%), MO (34.7%), WV (35.1%), NC (35.5%)
+| DIM_TIME | Year of measurement | INTEGER |
+| GEO_NAME_SHORT | Country or region name | TEXT |
+| DIM_SEX | Gender category (MALE, FEMALE, TOTAL) | TEXT |
+| DIM_AGE | Age group (e.g., Y_GE18 for 18 years and older) | TEXT |
+| RATE_PER_100_N | Obesity rate per 100 people (nominal) | REAL |
+| RATE_PER_100_NL | Obesity rate per 100 people (lower bound) | REAL |
+| RATE_PER_100_NU | Obesity rate per 100 people (upper bound) | REAL |
+| data_source | Origin of the data (always 'WHO_OBESITY') | TEXT |
 
 ### Data Quality Notes
-- Race/Ethnicity categories require cleaning and standardization
-- Some unexpected values observed in the race/ethnicity field
-- Age and education fields show partial completeness
-- Consider standardizing demographic categories across all records
+- No missing rate values
+- Country names, sex, and age categories are standardized
+- Years are properly formatted as integers
+
+## CDC Obesity Data Table
+**Table:** `cdc_obesity_data`  
+**Records:** 100,464  
+**Description:** Contains detailed US state-level obesity statistics with demographic breakdowns.
+**Year Range:** 2011-2023
+
+### Schema
+```sql
+CREATE TABLE IF NOT EXISTS "cdc_obesity_data" (
+  "yearstart" INTEGER,
+  "yearend" INTEGER,
+  "locationabbr" TEXT,
+  "locationdesc" TEXT,
+  "datasource" TEXT,
+  "class" TEXT,
+  "topic" TEXT,
+  "question" TEXT,
+  "data_value_unit" INTEGER,
+  "data_value_type" TEXT,
+  "data_value" REAL,
+  "data_value_alt" REAL,
+  "low_confidence_limit" REAL,
+  "high_confidence_limit" REAL,
+  "sample_size" REAL,
+  "race_ethnicity" TEXT,
+  "geolocation" TEXT,
+  "classid" TEXT,
+  "topicid" TEXT,
+  "questionid" TEXT,
+  "datavaluetypeid" TEXT,
+  "locationid" INTEGER,
+  "stratificationcategory1" TEXT,
+  "stratification1" TEXT,
+  "stratificationcategoryid1" TEXT,
+  "stratificationid1" TEXT,
+  "sex" TEXT,
+  "age_years" TEXT,
+  "income" TEXT,
+  "education" TEXT,
+  "data_value_footnote_symbol" TEXT,
+  "data_value_footnote" TEXT,
+  "total" TEXT,
+  "year" INTEGER,
+  "location" TEXT,
+  "data_source" TEXT
+);
+```
 
 ### Core Fields
 | Column Name | Description | Data Type |
 |------------|-------------|------------|
-| yearstart | Start year of the data point | Integer |
-| yearend | End year of the data point | Integer |
-| locationabbr | State abbreviation | String |
-| locationdesc | Full state name | String |
-| data_value | Obesity rate value | Float |
-| data_value_alt | Alternative data value | Float |
-| data_value_unit | Unit of measurement | String |
-| data_value_type | Type of measurement | String |
-| low_confidence_limit | Lower confidence interval | Float |
-| high_confidence_limit | Upper confidence interval | Float |
-| sample_size | Size of sample surveyed | Integer |
-| total | Total population represented | Integer |
-| year | Normalized year value | Integer |
-| location | Normalized location name | String |
+| yearstart | Start year of the data point | INTEGER |
+| yearend | End year of the data point | INTEGER |
+| locationabbr | State abbreviation | TEXT |
+| locationdesc | Full state name | TEXT |
+| topic | Topic category (e.g., "Obesity / Weight Status") | TEXT |
+| question | Survey question text | TEXT |
+| data_value | Obesity rate value | REAL |
+| low_confidence_limit | Lower confidence interval | REAL |
+| high_confidence_limit | Upper confidence interval | REAL |
+| sample_size | Size of sample surveyed | REAL |
+| year | Normalized year value | INTEGER |
+| location | Normalized location name | TEXT |
+| data_source | Origin of the data (always 'CDC_OBESITY') | TEXT |
 
 ### Demographic Fields
 | Column Name | Description | Data Type |
 |------------|-------------|------------|
-| race_ethnicity | Race/ethnicity category | String |
-| sex | Gender category | String |
-| age_years | Age group category | String |
-| income | Income bracket | String |
-| education | Education level | String |
-| stratificationcategory1 | Primary stratification category | String |
-| stratification1 | Primary stratification value | String |
-| stratificationcategoryid1 | Category ID | String |
-| stratificationid1 | Stratification ID | String |
+| race_ethnicity | Race/ethnicity category | TEXT |
+| sex | Gender category | TEXT |
+| age_years | Age group category | TEXT |
+| income | Income bracket | TEXT |
+| education | Education level | TEXT |
 
-### Geographic Fields
-| Column Name | Description | Data Type |
-|------------|-------------|------------|
-| geolocation | Combined geolocation data containing latitude, longitude, and human address | JSON Object |
-| locationid | Location identifier | String |
+### Data Quality Notes
+- 9,815 records (9.8%) have missing data values
+- Some demographic fields (sex, age_years) have missing values
+- Topics and questions are consistent
+- Location abbreviations are standardized
 
-### Metadata Fields
-| Column Name | Description | Data Type |
-|------------|-------------|------------|
-| datasource | Data source (always 'BRFSS') | String |
-| class | Classification category | String |
-| topic | Topic category | String |
-| question | Survey question text | String |
-| classid | Class identifier | String |
-| topicid | Topic identifier | String |
-| questionid | Question identifier | String |
-| datavaluetypeid | Value type identifier | String |
-| data_value_footnote_symbol | Symbol for footnote reference | String |
-| data_value_footnote | Explanatory footnote text | String |
+## Database Views
+
+### Substances by Category View
+```sql
+CREATE VIEW substances_by_category AS
+  SELECT 
+    category,
+    COUNT(*) as count
+  FROM 
+    fda_substances
+  WHERE 
+    category IS NOT NULL
+  GROUP BY 
+    category
+  ORDER BY 
+    count DESC;
+```
+
+### Obesity Trend US View
+```sql
+CREATE VIEW obesity_trend_us AS
+  SELECT 
+    yearstart as year,
+    AVG(data_value) as avg_obesity_rate
+  FROM 
+    cdc_obesity_data
+  WHERE 
+    topic = 'Obesity / Weight Status' AND
+    question LIKE '%obesity%' AND
+    data_value IS NOT NULL AND
+    locationabbr = 'US'
+  GROUP BY 
+    yearstart
+  ORDER BY 
+    yearstart;
+```
+
+## Accessing the Database
+
+### SQLite Command Line
+```bash
+# Connect to the database
+sqlite3 etl/data/db/food_safety_dashboard.db
+
+# List all tables
+.tables
+
+# View schema
+.schema
+
+# Run a query
+SELECT * FROM fda_substances LIMIT 5;
+```
+
+### JavaScript/Node.js (with better-sqlite3)
+```javascript
+const Database = require('better-sqlite3');
+const db = new Database('etl/data/db/food_safety_dashboard.db');
+
+// Query example
+const substances = db.prepare('SELECT * FROM fda_substances LIMIT 5').all();
+console.log(substances);
+
+// Close the connection when done
+db.close();
+```
+
+### Python (with sqlite3)
+```python
+import sqlite3
+
+# Connect to the database
+conn = sqlite3.connect('etl/data/db/food_safety_dashboard.db')
+cursor = conn.cursor()
+
+# Query example
+cursor.execute('SELECT * FROM fda_substances LIMIT 5')
+substances = cursor.fetchall()
+print(substances)
+
+# Close the connection when done
+conn.close()
+```
 
 ## Notes
 - All datasets include a `data_source` field to track the origin of the data
-- Dates are typically stored in ISO format (YYYY-MM-DD)
-- Missing values are represented as empty strings or NULL values
-- Some fields may contain multiple values separated by delimiters
-- Record counts shown include the header row in the total count
-- Commands used to verify this data dictionary:
-  ```bash
-  # Count records
-  wc -l etl/data/processed/processed_*.csv
-  
-  # View and sort headers
-  head -n 1 etl/data/processed/processed_fda_substances.csv | tr ',' '\n' | sort
-  head -n 1 etl/data/processed/processed_fsis_recalls.csv | tr ',' '\n' | sort
-  head -n 1 etl/data/processed/processed_gras_notices.csv | tr ',' '\n' | sort
-  head -n 1 etl/data/processed/processed_who_obesity_data.csv | tr ',' '\n' | sort
-  head -n 1 etl/data/processed/processed_cdc_obesity_data.csv | tr ',' '\n' | sort
-  ```
+- Dates are typically stored in ISO format (YYYY-MM-DD) or as TIMESTAMP
+- Missing values are represented as NULL values in the database
+- Some fields contain JSON arrays that need to be parsed when used (e.g., technical_effects, states)
+- The database includes indexes on commonly queried fields for better performance
+- Views provide pre-aggregated data for common queries
