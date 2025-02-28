@@ -64,6 +64,7 @@ const RecallGeographicMap = () => {
         
         // Count recalls by state
         const recallsByState = {};
+        const totalRecalls = processedData.length;
         
         // Initialize all states with 0 recalls
         Object.values(stateAbbreviations).forEach(abbr => {
@@ -73,12 +74,34 @@ const RecallGeographicMap = () => {
         // Count recalls for each state
         processedData.forEach(recall => {
           if (recall.states && recall.states.length) {
+            // Check if it's a nationwide recall by comparing length to total states
+            const isNationwide = recall.states.length === Object.values(stateAbbreviations).length;
+            
             recall.states.forEach(stateAbbr => {
               if (recallsByState[stateAbbr] !== undefined) {
-                recallsByState[stateAbbr]++;
+                // For nationwide recalls, count as a fraction to avoid inflating numbers
+                recallsByState[stateAbbr] += isNationwide ? (1 / recall.states.length) : 1;
               }
             });
           }
+        });
+
+        // Round the recall counts to nearest whole number and calculate statistics
+        let maxRecalls = 0;
+        let totalStateRecalls = 0;
+        
+        Object.keys(recallsByState).forEach(state => {
+          recallsByState[state] = Math.round(recallsByState[state]);
+          maxRecalls = Math.max(maxRecalls, recallsByState[state]);
+          totalStateRecalls += recallsByState[state];
+        });
+
+        // Log statistics for debugging
+        console.log('Recall Statistics:', {
+          totalRecalls,
+          totalStateRecalls,
+          maxRecalls,
+          averageRecallsPerState: totalStateRecalls / Object.keys(recallsByState).length
         });
         
         // Combine GeoJSON with recall counts
@@ -95,11 +118,18 @@ const RecallGeographicMap = () => {
             }
           };
         });
+
+        console.log('States with data:', statesWithData.map(s => ({
+          name: s.properties.name,
+          abbr: s.properties.abbr,
+          count: s.properties.recallCount
+        })));
         
         setData({
           states: statesWithData,
           recallsByState,
-          stateNamesByAbbr
+          stateNamesByAbbr,
+          maxRecalls
         });
         setLoading(false);
       } catch (error) {
@@ -131,6 +161,17 @@ const RecallGeographicMap = () => {
       .attr('preserveAspectRatio', 'xMidYMid meet')
       .attr('class', 'rounded-0');
 
+    // Create tooltip
+    const tooltip = d3.select('body').append('div')
+      .attr('class', 'tooltip')
+      .style('position', 'absolute')
+      .style('background-color', 'white')
+      .style('padding', '8px')
+      .style('border', '1px solid #ddd')
+      .style('border-radius', '0')
+      .style('pointer-events', 'none')
+      .style('opacity', 0);
+
     // Create container group
     const g = svg.append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
@@ -144,11 +185,11 @@ const RecallGeographicMap = () => {
       .style('font-weight', 'bold')
       .text('FSIS Food Recalls by State');
 
-    // Create color scale
+    // Create color scale with better domain
     const colorScale = d3.scaleSequential(d3.interpolateYlOrRd)
-      .domain([0, d3.max(data.states, d => d.properties.recallCount)]);
+      .domain([0, data.maxRecalls || 1]); // Use maxRecalls from data, fallback to 1 if undefined
 
-    // Create projection
+    // Create projection with adjusted size
     const projection = d3.geoAlbersUsa()
       .fitSize([innerWidth, innerHeight], { type: 'FeatureCollection', features: data.states });
 
@@ -156,14 +197,22 @@ const RecallGeographicMap = () => {
     const path = d3.geoPath()
       .projection(projection);
 
-    // Add states
+    // Add states with improved styling
     g.selectAll('.state')
       .data(data.states)
       .enter()
       .append('path')
       .attr('class', 'state')
-      .attr('d', path)
-      .attr('fill', d => d.properties.recallCount === 0 ? '#e9ecef' : colorScale(d.properties.recallCount))
+      .attr('d', d => {
+        const pathData = path(d);
+        return pathData || 'M0,0';
+      })
+      .attr('fill', d => {
+        const pathData = path(d);
+        if (!pathData) return 'none';
+        const count = d.properties.recallCount;
+        return count === 0 ? '#e9ecef' : colorScale(count);
+      })
       .attr('stroke', '#fff')
       .attr('stroke-width', 0.5)
       .style('opacity', 0.8)
@@ -171,31 +220,53 @@ const RecallGeographicMap = () => {
         d3.select(this)
           .style('opacity', 1)
           .attr('stroke-width', 1.5);
+          
+        tooltip.transition().duration(200).style('opacity', 0.9);
+        tooltip.html(`
+          <strong>${d.properties.name}</strong><br/>
+          Recalls: ${d.properties.recallCount.toLocaleString()}
+        `)
+          .style('left', (event.pageX + 10) + 'px')
+          .style('top', (event.pageY - 28) + 'px');
       })
       .on('mouseout', function() {
         d3.select(this)
           .style('opacity', 0.8)
           .attr('stroke-width', 0.5);
+          
+        tooltip.transition().duration(500).style('opacity', 0);
       });
 
-    // Add state labels
+    // Add state labels with improved visibility
     g.selectAll('.state-label')
       .data(data.states)
       .enter()
       .append('text')
       .attr('class', 'state-label')
-      .attr('transform', d => `translate(${path.centroid(d)})`)
+      .attr('transform', d => {
+        const centroid = path.centroid(d);
+        return isNaN(centroid[0]) || isNaN(centroid[1]) ? 
+          null : `translate(${centroid[0]},${centroid[1]})`;
+      })
       .attr('text-anchor', 'middle')
       .style('font-size', '10px')
       .style('font-weight', 'bold')
       .style('pointer-events', 'none')
-      .style('fill', d => d.properties.recallCount > d3.max(data.states, s => s.properties.recallCount) * 0.7 ? '#fff' : '#000')
-      .text(d => d.properties.abbr);
+      .style('fill', d => {
+        const count = d.properties.recallCount;
+        const maxCount = data.maxRecalls || 1;
+        return count > maxCount * 0.5 ? '#fff' : '#000';
+      })
+      .text(d => d.properties.abbr)
+      .filter(d => {
+        const centroid = path.centroid(d);
+        return !isNaN(centroid[0]) && !isNaN(centroid[1]);
+      });
 
-    // Add legend
+    // Add legend with improved formatting
     const legendWidth = 200;
     const legendHeight = 20;
-    const legendX = width - margin.right - legendWidth;
+    const legendX = width - margin.right - legendWidth - 20;
     const legendY = height - margin.bottom - 40;
 
     // Create gradient for legend
@@ -207,11 +278,10 @@ const RecallGeographicMap = () => {
       .attr('x2', '100%')
       .attr('y2', '0%');
 
-    // Add color stops
-    const colorDomain = colorScale.domain();
+    // Add color stops with better distribution
     const steps = 10;
     for (let i = 0; i <= steps; i++) {
-      const value = colorDomain[0] + (i / steps) * (colorDomain[1] - colorDomain[0]);
+      const value = (i / steps) * (data.maxRecalls || 1);
       linearGradient.append('stop')
         .attr('offset', `${i * 100 / steps}%`)
         .attr('stop-color', colorScale(value));
@@ -225,7 +295,7 @@ const RecallGeographicMap = () => {
       .attr('height', legendHeight)
       .style('fill', 'url(#recall-color-gradient)');
 
-    // Add legend labels
+    // Add legend labels with better formatting
     svg.append('text')
       .attr('x', legendX)
       .attr('y', legendY - 5)
@@ -237,7 +307,7 @@ const RecallGeographicMap = () => {
       .attr('y', legendY - 5)
       .attr('text-anchor', 'end')
       .style('font-size', '10px')
-      .text(Math.round(colorDomain[1]));
+      .text(data.maxRecalls ? data.maxRecalls.toLocaleString() : '0');
 
     svg.append('text')
       .attr('x', legendX + legendWidth / 2)
@@ -246,39 +316,7 @@ const RecallGeographicMap = () => {
       .style('font-size', '10px')
       .text('Number of Recalls');
 
-    // Add tooltips
-    const tooltip = d3.select('body')
-      .append('div')
-      .attr('class', 'tooltip')
-      .style('position', 'absolute')
-      .style('background', 'rgba(0, 0, 0, 0.7)')
-      .style('color', 'white')
-      .style('padding', '8px')
-      .style('border-radius', '0')
-      .style('pointer-events', 'none')
-      .style('opacity', 0);
-
-    // Add tooltip interactions
-    g.selectAll('.state')
-      .on('mouseover', function(event, d) {
-        d3.select(this)
-          .style('opacity', 1)
-          .attr('stroke-width', 1.5);
-        
-        tooltip.transition().duration(200).style('opacity', 0.9);
-        tooltip.html(`<strong>${d.properties.name}</strong><br/>${d.properties.recallCount} recalls`)
-          .style('left', (event.pageX + 10) + 'px')
-          .style('top', (event.pageY - 28) + 'px');
-      })
-      .on('mouseout', function() {
-        d3.select(this)
-          .style('opacity', 0.8)
-          .attr('stroke-width', 0.5);
-        
-        tooltip.transition().duration(500).style('opacity', 0);
-      });
-
-    // Clean up tooltip on unmount
+    // Clean up tooltip when component unmounts
     return () => {
       d3.select('body').selectAll('.tooltip').remove();
     };
