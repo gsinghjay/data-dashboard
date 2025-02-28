@@ -63,7 +63,10 @@ const RecallRecoveryChart = () => {
         // Convert to array and sort by year
         const chartData = Array.from(recoveryByYear, ([year, stats]) => ({
           year,
-          ...stats
+          totalRecalls: stats.totalRecalls,
+          totalRecovered: stats.totalRecovered,
+          avgRecovered: stats.avgRecovered,
+          recoveryRates: stats.recoveryRates
         })).sort((a, b) => a.year - b.year);
         
         setData(chartData);
@@ -187,6 +190,8 @@ const RecallRecoveryChart = () => {
           .attr('stroke-width', 1)
           .attr('class', 'rounded-0')
           .style('opacity', 0.8)
+          .attr('data-year', year) // Store year as data attribute
+          .attr('data-range', d.range) // Store range as data attribute
           .on('mouseover', function(event) {
             d3.select(this).style('opacity', 1);
           })
@@ -208,38 +213,44 @@ const RecallRecoveryChart = () => {
       .datum(data)
       .attr('fill', 'none')
       .attr('stroke', '#0d6efd')
-      .attr('stroke-width', 3)
+      .attr('stroke-width', 2)
       .attr('d', lineGenerator);
 
-    // Add data points for average
-    g.selectAll('.avg-point')
+    // Add line points
+    g.selectAll('.line-point')
       .data(data)
       .enter()
       .append('circle')
-      .attr('class', 'avg-point')
+      .attr('class', 'line-point')
       .attr('cx', d => xScale(d.year) + xScale.bandwidth() / 2)
       .attr('cy', d => yScale(d.avgRecovered))
-      .attr('r', 5)
+      .attr('r', 4)
       .attr('fill', '#0d6efd')
-      .attr('stroke', '#fff')
-      .attr('stroke-width', 2);
+      .attr('stroke', 'white')
+      .attr('stroke-width', 1)
+      .attr('data-year', d => d.year) // Store year as data attribute
+      .on('mouseover', function(event) {
+        d3.select(this).attr('r', 6);
+      })
+      .on('mouseout', function() {
+        d3.select(this).attr('r', 4);
+      });
 
     // Add legend
     const legend = svg.append('g')
       .attr('transform', `translate(${width - margin.right + 20}, ${margin.top})`);
 
     // Recovery rate legend
-    const categories = ['0-25%', '25-50%', '50-75%', '75-100%'];
+    const recoveryLegend = legend.append('g');
     
-    categories.forEach((category, i) => {
-      const legendRow = legend.append('g')
+    ['0-25%', '25-50%', '50-75%', '75-100%'].forEach((range, i) => {
+      const legendRow = recoveryLegend.append('g')
         .attr('transform', `translate(0, ${i * 20})`);
       
       legendRow.append('rect')
         .attr('width', 15)
         .attr('height', 15)
-        .attr('fill', colorScale(category))
-        .attr('stroke', 'white')
+        .attr('fill', colorScale(range))
         .attr('class', 'rounded-0');
       
       legendRow.append('text')
@@ -247,36 +258,35 @@ const RecallRecoveryChart = () => {
         .attr('y', 12.5)
         .attr('text-anchor', 'start')
         .style('font-size', '12px')
-        .text(`${category} Recovery`);
+        .text(range);
     });
 
     // Average line legend
-    const avgLegend = legend.append('g')
-      .attr('transform', `translate(0, ${categories.length * 20 + 10})`);
+    const lineLegend = legend.append('g')
+      .attr('transform', `translate(0, ${4 * 20 + 10})`);
     
-    avgLegend.append('line')
+    lineLegend.append('line')
       .attr('x1', 0)
       .attr('y1', 7.5)
       .attr('x2', 15)
       .attr('y2', 7.5)
       .attr('stroke', '#0d6efd')
-      .attr('stroke-width', 3);
+      .attr('stroke-width', 2);
     
-    avgLegend.append('text')
+    lineLegend.append('text')
       .attr('x', 20)
       .attr('y', 12.5)
       .attr('text-anchor', 'start')
       .style('font-size', '12px')
       .text('Avg Recovery Rate');
 
-    // Add tooltips
-    const tooltip = d3.select('body')
-      .append('div')
+    // Create tooltip
+    const tooltip = d3.select('body').append('div')
       .attr('class', 'tooltip')
       .style('position', 'absolute')
-      .style('background', 'rgba(0, 0, 0, 0.7)')
-      .style('color', 'white')
+      .style('background-color', 'white')
       .style('padding', '8px')
+      .style('border', '1px solid #ddd')
       .style('border-radius', '0')
       .style('pointer-events', 'none')
       .style('opacity', 0);
@@ -284,12 +294,23 @@ const RecallRecoveryChart = () => {
     // Add tooltip interactions for stacked bars
     g.selectAll('rect')
       .on('mouseover', function(event, d) {
-        const yearData = data.find(item => item.year === parseInt(d.year));
+        const rect = d3.select(this);
+        const year = rect.attr('data-year');
+        const range = rect.attr('data-range');
+        
+        // Find the corresponding data
+        const yearData = data.find(item => item.year === parseInt(year));
+        if (!yearData) return;
+        
+        const rangeData = stackedData.find(item => 
+          item.year === parseInt(year) && item.range === range
+        );
+        if (!rangeData) return;
         
         tooltip.transition().duration(200).style('opacity', 0.9);
         tooltip.html(`
-          <strong>Year: ${d.year}</strong><br/>
-          <strong>${d.range} Recovery:</strong> ${d.count} recalls (${d.percentage.toFixed(1)}%)<br/>
+          <strong>Year: ${year}</strong><br/>
+          <strong>${range} Recovery:</strong> ${rangeData.count} recalls (${rangeData.percentage.toFixed(1)}%)<br/>
           <strong>Total Recalls:</strong> ${yearData.totalRecalls}<br/>
           <strong>Avg Recovery Rate:</strong> ${yearData.avgRecovered.toFixed(1)}%
         `)
@@ -300,31 +321,27 @@ const RecallRecoveryChart = () => {
         tooltip.transition().duration(500).style('opacity', 0);
       });
 
-    // Add tooltip interactions for average points
-    g.selectAll('.avg-point')
+    // Add tooltip interactions for line points
+    g.selectAll('.line-point')
       .on('mouseover', function(event, d) {
-        d3.select(this)
-          .attr('r', 7)
-          .attr('stroke-width', 3);
+        const year = d3.select(this).attr('data-year');
+        const yearData = data.find(item => item.year === parseInt(year));
+        if (!yearData) return;
         
         tooltip.transition().duration(200).style('opacity', 0.9);
         tooltip.html(`
-          <strong>Year: ${d.year}</strong><br/>
-          <strong>Avg Recovery Rate:</strong> ${d.avgRecovered.toFixed(1)}%<br/>
-          <strong>Total Recalls:</strong> ${d.totalRecalls}
+          <strong>Year: ${yearData.year}</strong><br/>
+          <strong>Avg Recovery Rate:</strong> ${yearData.avgRecovered.toFixed(1)}%<br/>
+          <strong>Total Recalls:</strong> ${yearData.totalRecalls}
         `)
           .style('left', (event.pageX + 10) + 'px')
           .style('top', (event.pageY - 28) + 'px');
       })
       .on('mouseout', function() {
-        d3.select(this)
-          .attr('r', 5)
-          .attr('stroke-width', 2);
-        
         tooltip.transition().duration(500).style('opacity', 0);
       });
 
-    // Clean up tooltip on unmount
+    // Clean up tooltip when component unmounts
     return () => {
       d3.select('body').selectAll('.tooltip').remove();
     };
