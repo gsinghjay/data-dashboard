@@ -34,13 +34,43 @@ export const processFDASubstances = (row) => {
  * @returns {Object} - Cleaned data row
  */
 export const processFSISRecalls = (row) => {
+  // List of all US state abbreviations
+  const allStates = [
+    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+    'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+    'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+    'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+    'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY',
+    'DC'
+  ];
+
+  // Process states field
+  let states = [];
+  if (row.states) {
+    // Clean up the states field
+    const statesValue = row.states.toString().trim().toLowerCase();
+    
+    // Check for nationwide recalls
+    if (statesValue.includes('nationwide') || 
+        statesValue.includes('national') || 
+        statesValue.includes('all states')) {
+      // If nationwide recall, include all states
+      states = [...allStates];
+    } else {
+      // Try to extract state abbreviations
+      const statePattern = new RegExp(allStates.join('|'), 'gi');
+      const matches = statesValue.toUpperCase().match(statePattern) || [];
+      states = [...new Set(matches)]; // Remove duplicates
+    }
+  }
+
+  // Clean up other fields
   return {
     ...row,
-    // Convert states from string to array if it exists
-    states: row.states ? row.states.split(',').map(state => state.trim()) : [],
-    // Convert numeric fields
+    states,
     quantity_lbs: parseFloat(row.quantity_lbs) || 0,
-    year: parseInt(row.year) || null
+    year: parseInt(row.year) || null,
+    risk_level: row.risk_level || row.risk_level_raw
   };
 };
 
