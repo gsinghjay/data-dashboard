@@ -1,6 +1,33 @@
 # CHANGELOG
 
 
+## v1.5.0 (2025-02-28)
+
+### Build System
+
+- Update requirements.txt to remove built-in modules
+  ([`9fb9807`](https://github.com/gsinghjay/data-dashboard/commit/9fb9807f8addf2324678072015b4b2989069c8c6))
+
+### Documentation
+
+- **etl**: Add documentation for ETL scripts and analysis pipeline
+  ([`43c2bbd`](https://github.com/gsinghjay/data-dashboard/commit/43c2bbdd6fd77b3cd2f179415bb547a945f6a2ca))
+
+### Features
+
+- **analysis**: Add initial analysis outputs and visualizations
+  ([`0b8922a`](https://github.com/gsinghjay/data-dashboard/commit/0b8922af79d440ee403d67790b55542aed5aa48c))
+
+- **etl**: Add analysis generation script for food safety insights
+  ([`8b00e62`](https://github.com/gsinghjay/data-dashboard/commit/8b00e6233ae7f821bacb43b791925d8142463b9e))
+
+- **etl**: Add database initialization script for food safety data
+  ([`543c4e7`](https://github.com/gsinghjay/data-dashboard/commit/543c4e7f9eefb8e109e96c2f409c5a71fddfcc14))
+
+- **etl**: Add pipeline runner script for end-to-end analysis
+  ([`5028b2b`](https://github.com/gsinghjay/data-dashboard/commit/5028b2ba4b07b62ad6c5d9173053c4971ecb7f60))
+
+
 ## v1.4.0 (2025-02-28)
 
 ### Bug Fixes
