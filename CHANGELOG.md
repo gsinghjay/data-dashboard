@@ -1,6 +1,43 @@
 # CHANGELOG
 
 
+## v1.4.0 (2025-02-28)
+
+### Bug Fixes
+
+- **data**: Improve state data handling and nationwide recall detection in FSIS data processing
+  ([`d8f5322`](https://github.com/gsinghjay/data-dashboard/commit/d8f53220618935a3c4dd195575d3ad90c2f2ca6d))
+
+- **viz**: Correct recall count distribution in geographic map visualization
+  ([`f6703ef`](https://github.com/gsinghjay/data-dashboard/commit/f6703efe42724b2ff8a53a2bfdb0b96d36a71242))
+
+- **viz**: Improve tooltip visibility and styling in recall duration chart
+  ([`c667be5`](https://github.com/gsinghjay/data-dashboard/commit/c667be5628637540fd42ea0ae9512a92b8a95e74))
+
+- **viz**: Resolve data handling and tooltip issues in recall recovery chart
+  ([`a811f5c`](https://github.com/gsinghjay/data-dashboard/commit/a811f5cdc4a5179c196ef6979935ea9091c76865))
+
+### Features
+
+- **app**: Update App.jsx to include new FSISRecallsPage component
+  ([`94eb6a1`](https://github.com/gsinghjay/data-dashboard/commit/94eb6a14acd8716bf25b93c67e89ac5cd5770fba))
+
+- **recalls**: Add FSISRecallsPage component to showcase all FSIS recall visualizations
+  ([`9ede0bf`](https://github.com/gsinghjay/data-dashboard/commit/9ede0bf9cac54062fd93078643ffa21c52a045d8))
+
+- **recalls**: Add RecallDurationChart component for visualizing FSIS recall durations
+  ([`d6353cb`](https://github.com/gsinghjay/data-dashboard/commit/d6353cb746aeeba80b1cbbbbe853758ed96c2599))
+
+- **recalls**: Add RecallGeographicMap component for visualizing FSIS recalls by state
+  ([`ddd2d52`](https://github.com/gsinghjay/data-dashboard/commit/ddd2d52785518d4f92c9e442714a7cceb578f9e9))
+
+- **recalls**: Add RecallRecoveryChart component for visualizing FSIS recall recovery rates
+  ([`9cf8990`](https://github.com/gsinghjay/data-dashboard/commit/9cf8990ae02bfe6a9139f0fa8f9f7c36a5930532))
+
+- **recalls**: Add RecallTimelineChart component for visualizing FSIS recalls over time
+  ([`2f665fa`](https://github.com/gsinghjay/data-dashboard/commit/2f665fa0aca2699aec20afa4afd4e2d2556f9325))
+
+
 ## v1.3.0 (2025-02-28)
 
 ### Features
