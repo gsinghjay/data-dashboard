@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
-import { processFSISRecalls } from '../../utils/dataProcessing';
 
 const RecallDurationChart = () => {
   const [data, setData] = useState([]);
@@ -23,8 +22,8 @@ const RecallDurationChart = () => {
         // Process the data
         const processedData = rawData
           .map(row => {
-            const recallDate = row.field_recall_date ? new Date(row.field_recall_date) : null;
-            const closedDate = row.field_closed_date ? new Date(row.field_closed_date) : null;
+            const recallDate = row.recall_date ? new Date(row.recall_date) : null;
+            const closedDate = row.closed_date ? new Date(row.closed_date) : null;
             
             // Calculate duration in days
             let duration = null;
@@ -33,23 +32,22 @@ const RecallDurationChart = () => {
             }
             
             return {
-              recall_number: row.field_recall_number,
-              establishment: row.field_establishment,
+              recall_number: row.recall_number,
+              establishment: row.establishment,
               recall_date: recallDate,
               closed_date: closedDate,
               year: row.year ? parseInt(row.year) : null,
               risk_level: row.risk_level,
-              recall_reason: row.field_recall_reason,
+              recall_reason: row.recall_reason,
               duration: duration
             };
           })
-          .filter(d => d.year && d.duration !== null && d.duration >= 0);
+          .filter(d => d.year && d.duration !== null && d.duration >= 0 && d.risk_level);
         
         // Group by risk level and calculate duration statistics
         const durationByRiskLevel = d3.rollup(
           processedData,
           v => {
-            // Calculate quartiles, min, max for box plot
             const durations = v.map(d => d.duration).sort(d3.ascending);
             const q1 = d3.quantile(durations, 0.25);
             const median = d3.quantile(durations, 0.5);
@@ -58,11 +56,9 @@ const RecallDurationChart = () => {
             const min = Math.max(0, d3.min(durations));
             const max = d3.max(durations);
             
-            // Calculate whiskers (1.5 * IQR)
             const whiskerLow = Math.max(min, q1 - 1.5 * iqr);
             const whiskerHigh = Math.min(max, q3 + 1.5 * iqr);
             
-            // Find outliers
             const outliers = durations.filter(d => d < whiskerLow || d > whiskerHigh);
             
             return {
@@ -82,7 +78,6 @@ const RecallDurationChart = () => {
           d => d.risk_level
         );
         
-        // Convert to array and sort by median duration
         const chartData = Array.from(durationByRiskLevel, ([riskLevel, stats]) => ({
           riskLevel,
           ...stats
@@ -107,17 +102,18 @@ const RecallDurationChart = () => {
     d3.select(svgRef.current).selectAll('*').remove();
 
     // Chart dimensions
+    const margin = { top: 40, right: 30, bottom: 60, left: 80 };
     const width = 800;
     const height = 500;
-    const margin = { top: 40, right: 30, bottom: 60, left: 80 };
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
-    // Create SVG with responsive container
+    // Create SVG
     const svg = d3.select(svgRef.current)
+      .attr('width', width)
+      .attr('height', height)
       .attr('viewBox', `0 0 ${width} ${height}`)
-      .attr('preserveAspectRatio', 'xMidYMid meet')
-      .attr('class', 'rounded-0');
+      .attr('preserveAspectRatio', 'xMidYMid meet');
 
     // Create container group
     const g = svg.append('g')
@@ -139,7 +135,7 @@ const RecallDurationChart = () => {
       .padding(0.3);
 
     const yScale = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.max) * 1.1]) // Add 10% padding
+      .domain([0, d3.max(data, d => d.max) * 1.1])
       .range([innerHeight, 0]);
 
     // Create color scale
@@ -148,18 +144,14 @@ const RecallDurationChart = () => {
       .range(['#dc3545', '#fd7e14', '#ffc107', '#20c997']);
 
     // Add axes
-    const xAxis = d3.axisBottom(xScale);
-    const yAxis = d3.axisLeft(yScale)
-      .ticks(10);
-
     g.append('g')
       .attr('transform', `translate(0,${innerHeight})`)
-      .call(xAxis)
+      .call(d3.axisBottom(xScale))
       .selectAll('text')
       .style('text-anchor', 'middle');
 
     g.append('g')
-      .call(yAxis);
+      .call(d3.axisLeft(yScale).ticks(10));
 
     // Add axis labels
     g.append('text')
@@ -175,143 +167,137 @@ const RecallDurationChart = () => {
       .attr('text-anchor', 'middle')
       .text('Duration (Days)');
 
+    // Create tooltip
+    const tooltip = d3.select('body').append('div')
+      .attr('class', 'tooltip')
+      .style('position', 'absolute')
+      .style('display', 'none')
+      .style('background-color', 'rgba(255, 255, 255, 0.95)')
+      .style('padding', '10px')
+      .style('border', '1px solid #ddd')
+      .style('border-radius', '0')
+      .style('box-shadow', '0 2px 4px rgba(0,0,0,0.1)')
+      .style('font-size', '12px')
+      .style('z-index', '1000')
+      .style('pointer-events', 'none');
+
     // Add box plots
     const boxWidth = xScale.bandwidth();
     
-    data.forEach(d => {
-      const x = xScale(d.riskLevel);
-      const color = colorScale(d.riskLevel);
-      
-      // Add box
-      g.append('rect')
-        .attr('x', x)
-        .attr('y', yScale(d.q3))
-        .attr('width', boxWidth)
-        .attr('height', yScale(d.q1) - yScale(d.q3))
-        .attr('fill', color)
-        .attr('stroke', '#000')
-        .attr('stroke-width', 1)
-        .attr('opacity', 0.7)
-        .attr('class', 'rounded-0');
-      
-      // Add median line
-      g.append('line')
-        .attr('x1', x)
-        .attr('x2', x + boxWidth)
-        .attr('y1', yScale(d.median))
-        .attr('y2', yScale(d.median))
-        .attr('stroke', '#000')
-        .attr('stroke-width', 2);
-      
-      // Add whiskers
-      g.append('line')
-        .attr('x1', x + boxWidth / 2)
-        .attr('x2', x + boxWidth / 2)
-        .attr('y1', yScale(d.whiskerLow))
-        .attr('y2', yScale(d.q1))
-        .attr('stroke', '#000')
-        .attr('stroke-width', 1)
-        .attr('stroke-dasharray', '3,3');
-      
-      g.append('line')
-        .attr('x1', x + boxWidth / 2)
-        .attr('x2', x + boxWidth / 2)
-        .attr('y1', yScale(d.q3))
-        .attr('y2', yScale(d.whiskerHigh))
-        .attr('stroke', '#000')
-        .attr('stroke-width', 1)
-        .attr('stroke-dasharray', '3,3');
-      
-      // Add whisker caps
-      g.append('line')
-        .attr('x1', x + boxWidth * 0.25)
-        .attr('x2', x + boxWidth * 0.75)
-        .attr('y1', yScale(d.whiskerLow))
-        .attr('y2', yScale(d.whiskerLow))
-        .attr('stroke', '#000')
-        .attr('stroke-width', 1);
-      
-      g.append('line')
-        .attr('x1', x + boxWidth * 0.25)
-        .attr('x2', x + boxWidth * 0.75)
-        .attr('y1', yScale(d.whiskerHigh))
-        .attr('y2', yScale(d.whiskerHigh))
-        .attr('stroke', '#000')
-        .attr('stroke-width', 1);
-      
-      // Add mean marker
-      g.append('circle')
-        .attr('cx', x + boxWidth / 2)
-        .attr('cy', yScale(d.mean))
-        .attr('r', 4)
-        .attr('fill', '#fff')
-        .attr('stroke', '#000')
-        .attr('stroke-width', 1);
-      
-      // Add outliers
-      d.outliers.forEach(outlier => {
-        g.append('circle')
-          .attr('cx', x + boxWidth / 2 + (Math.random() - 0.5) * boxWidth * 0.5)
-          .attr('cy', yScale(outlier))
-          .attr('r', 3)
-          .attr('fill', '#000')
-          .attr('opacity', 0.5);
-      });
-      
-      // Add count label
-      g.append('text')
-        .attr('x', x + boxWidth / 2)
-        .attr('y', yScale(d.max) - 10)
-        .attr('text-anchor', 'middle')
-        .style('font-size', '10px')
-        .text(`n = ${d.count}`);
-    });
+    const boxPlots = g.selectAll('.boxplot')
+      .data(data)
+      .enter()
+      .append('g')
+      .attr('class', 'boxplot')
+      .attr('transform', d => `translate(${xScale(d.riskLevel)},0)`);
 
-    // Add annotations
-    g.append('text')
-      .attr('x', innerWidth / 2)
-      .attr('y', 10)
-      .attr('text-anchor', 'middle')
-      .style('font-size', '12px')
-      .style('font-style', 'italic')
-      .text('Box: 25th to 75th percentile, Line: Median, Circle: Mean, Whiskers: 1.5 × IQR');
-
-    // Add tooltips
-    const tooltip = d3.select('body')
-      .append('div')
-      .attr('class', 'tooltip')
-      .style('position', 'absolute')
-      .style('background', 'rgba(0, 0, 0, 0.7)')
-      .style('color', 'white')
-      .style('padding', '8px')
-      .style('border-radius', '0')
-      .style('pointer-events', 'none')
-      .style('opacity', 0);
-
-    // Add tooltip interactions for boxes
-    g.selectAll('rect')
+    // Add boxes
+    boxPlots.append('rect')
+      .attr('x', 0)
+      .attr('y', d => yScale(d.q3))
+      .attr('width', boxWidth)
+      .attr('height', d => yScale(d.q1) - yScale(d.q3))
+      .attr('fill', d => colorScale(d.riskLevel))
+      .attr('stroke', '#000')
+      .attr('stroke-width', 1)
+      .attr('opacity', 0.7)
       .on('mouseover', function(event, d) {
-        const riskData = data.find(item => item.riskLevel === d3.select(this.parentNode).datum().riskLevel);
-        
-        tooltip.transition().duration(200).style('opacity', 0.9);
-        tooltip.html(`
-          <strong>Risk Level: ${riskData.riskLevel}</strong><br/>
-          <strong>Median Duration:</strong> ${Math.round(riskData.median)} days<br/>
-          <strong>Mean Duration:</strong> ${Math.round(riskData.mean)} days<br/>
-          <strong>Q1 (25%):</strong> ${Math.round(riskData.q1)} days<br/>
-          <strong>Q3 (75%):</strong> ${Math.round(riskData.q3)} days<br/>
-          <strong>Min:</strong> ${Math.round(riskData.min)} days<br/>
-          <strong>Max:</strong> ${Math.round(riskData.max)} days<br/>
-          <strong>Count:</strong> ${riskData.count} recalls
-        `)
-          .style('left', (event.pageX + 10) + 'px')
-          .style('top', (event.pageY - 28) + 'px');
+        d3.select(this).attr('opacity', 1);
+        tooltip
+          .style('display', 'block')
+          .html(`
+            <div style="font-weight: bold; margin-bottom: 5px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">
+              ${d.riskLevel}
+            </div>
+            <div style="display: grid; grid-template-columns: auto auto; gap: 4px;">
+              <div>Count:</div><div style="text-align: right">${d.count} recalls</div>
+              <div>Median:</div><div style="text-align: right">${Math.round(d.median)} days</div>
+              <div>Mean:</div><div style="text-align: right">${Math.round(d.mean)} days</div>
+              <div>Q1 (25%):</div><div style="text-align: right">${Math.round(d.q1)} days</div>
+              <div>Q3 (75%):</div><div style="text-align: right">${Math.round(d.q3)} days</div>
+              <div>Min:</div><div style="text-align: right">${Math.round(d.min)} days</div>
+              <div>Max:</div><div style="text-align: right">${Math.round(d.max)} days</div>
+            </div>
+          `)
+          .style('left', `${event.pageX + 10}px`)
+          .style('top', `${event.pageY - 10}px`);
+      })
+      .on('mousemove', function(event) {
+        tooltip
+          .style('left', `${event.pageX + 10}px`)
+          .style('top', `${event.pageY - 10}px`);
       })
       .on('mouseout', function() {
-        tooltip.transition().duration(500).style('opacity', 0);
+        d3.select(this).attr('opacity', 0.7);
+        tooltip.style('display', 'none');
       });
 
-    // Clean up tooltip on unmount
+    // Add median lines
+    boxPlots.append('line')
+      .attr('x1', 0)
+      .attr('x2', boxWidth)
+      .attr('y1', d => yScale(d.median))
+      .attr('y2', d => yScale(d.median))
+      .attr('stroke', '#000')
+      .attr('stroke-width', 2);
+
+    // Add whiskers
+    boxPlots.append('line')
+      .attr('class', 'whisker')
+      .attr('x1', boxWidth / 2)
+      .attr('x2', boxWidth / 2)
+      .attr('y1', d => yScale(d.whiskerLow))
+      .attr('y2', d => yScale(d.q1))
+      .attr('stroke', '#000')
+      .attr('stroke-width', 1)
+      .attr('stroke-dasharray', '3,3');
+
+    boxPlots.append('line')
+      .attr('class', 'whisker')
+      .attr('x1', boxWidth / 2)
+      .attr('x2', boxWidth / 2)
+      .attr('y1', d => yScale(d.q3))
+      .attr('y2', d => yScale(d.whiskerHigh))
+      .attr('stroke', '#000')
+      .attr('stroke-width', 1)
+      .attr('stroke-dasharray', '3,3');
+
+    // Add whisker caps
+    boxPlots.append('line')
+      .attr('class', 'whisker-cap')
+      .attr('x1', boxWidth * 0.25)
+      .attr('x2', boxWidth * 0.75)
+      .attr('y1', d => yScale(d.whiskerLow))
+      .attr('y2', d => yScale(d.whiskerLow))
+      .attr('stroke', '#000')
+      .attr('stroke-width', 1);
+
+    boxPlots.append('line')
+      .attr('class', 'whisker-cap')
+      .attr('x1', boxWidth * 0.25)
+      .attr('x2', boxWidth * 0.75)
+      .attr('y1', d => yScale(d.whiskerHigh))
+      .attr('y2', d => yScale(d.whiskerHigh))
+      .attr('stroke', '#000')
+      .attr('stroke-width', 1);
+
+    // Add outliers
+    boxPlots.each(function(d) {
+      d3.select(this).selectAll('.outlier')
+        .data(d.outliers)
+        .enter()
+        .append('circle')
+        .attr('class', 'outlier')
+        .attr('cx', boxWidth / 2)
+        .attr('cy', value => yScale(value))
+        .attr('r', 3)
+        .attr('fill', colorScale(d.riskLevel))
+        .attr('stroke', '#000')
+        .attr('stroke-width', 1)
+        .attr('opacity', 0.6);
+    });
+
+    // Cleanup function
     return () => {
       d3.select('body').selectAll('.tooltip').remove();
     };
@@ -320,7 +306,7 @@ const RecallDurationChart = () => {
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center h-100">
-        <div className="spinner-border text-primary rounded-0" role="status">
+        <div className="spinner-border text-primary" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
       </div>
@@ -329,7 +315,7 @@ const RecallDurationChart = () => {
 
   if (error) {
     return (
-      <div className="alert alert-danger rounded-0 m-3 d-flex align-items-center" role="alert">
+      <div className="alert alert-danger m-3" role="alert">
         <i className="bi bi-exclamation-triangle-fill me-2"></i>
         {error}
       </div>
@@ -337,11 +323,10 @@ const RecallDurationChart = () => {
   }
 
   return (
-    <div className="chart-container w-100 h-100 d-flex justify-content-center align-items-center">
+    <div className="chart-container">
       <svg 
         ref={svgRef}
-        style={{ width: '100%', height: '100%', minHeight: '400px' }}
-        className="rounded-0"
+        style={{ width: '100%', height: '100%', minHeight: '500px' }}
       />
     </div>
   );
