@@ -1,6 +1,20 @@
 # CHANGELOG
 
 
+## v1.14.0 (2025-05-11)
+
+### Features
+
+- Export FertilityMilestonesChart component
+  ([`15c4ddd`](https://github.com/gsinghjay/data-dashboard/commit/15c4ddd195b69a06d28688cd1b18c6e0c5ccd54a))
+
+- Implement educational milestones visualization chart
+  ([`25c41a3`](https://github.com/gsinghjay/data-dashboard/commit/25c41a343ca3a93c63e491dbd7a87bf0a6fd1c2b))
+
+- Integrate educational milestones visualization into narrative flow
+  ([`18c2934`](https://github.com/gsinghjay/data-dashboard/commit/18c2934e73654294427e6bff36acbd8226157cc9))
+
+
 ## v1.13.0 (2025-05-11)
 
 ### Bug Fixes
