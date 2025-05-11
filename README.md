@@ -129,10 +129,27 @@ We've created a comprehensive data processing pipeline to transform the raw ACS 
 
 ## 🛠️ Technology Stack
 
-* **Data Processing**: Python, Pandas, SQLite
-* **Frontend**: Next.js, TypeScript, Material UI
-* **Visualization**: D3.js with React integration
+* **Data Processing**: Python 3.9+, Pandas 2.0.0, SQLite, NumPy 1.23.5
+* **Frontend**: Next.js 15.3.2, TypeScript 5.8.3, Material UI 5.11.0
+* **State Management**: React Context API
+* **Visualization**: D3.js 7.8.0 with React integration
+* **API Layer**: Next.js API Routes with better-sqlite3
 * **Deployment**: Vercel
+
+## 🎨 Visualization Features
+
+* **Interactive Bar Chart**
+  * Displays fertility rates by education level
+  * Allows year selection (2008-2023)
+  * Supports year-to-year comparison mode
+  * Shows detailed statistics on hover
+  * Responsive design for all screen sizes
+
+* **Planned Additional Visualizations**
+  * Trend analysis with interactive line charts
+  * Geographic patterns with choropleth maps
+  * Education comparison views
+  * Narrative-driven data exploration
 
 ## 🚀 Project Status
 
@@ -140,10 +157,36 @@ We've created a comprehensive data processing pipeline to transform the raw ACS 
 - [x] Data processing pipeline implementation
 - [x] Database setup and schema design
 - [x] Full data processing (all years 2006-2023)
-- [ ] Frontend project scaffolding
-- [ ] Core UI components
-- [ ] Visualization components
-- [ ] API layer
+- [x] Frontend project scaffolding
+- [x] API layer implementation
+- [ ] Core UI components (in progress)
+- [ ] Visualization components (in progress)
+  - [x] FertilityBarChart - Shows fertility rates by education level
+  - [ ] Line chart for trends over time
+  - [ ] Choropleth map for geographic patterns
+  - [ ] Comparison visualizations
+- [ ] Narrative structure implementation
 - [ ] Performance optimization
 - [ ] Deployment configuration
 - [ ] Testing 
+
+## 📢 Current Development Focus
+
+We are currently focused on:
+
+1. **Enhancing Visualization Components**
+   * Refining the FertilityBarChart for better user experience
+   * Implementing year comparison features
+   * Developing additional visualization types
+
+2. **Building Narrative Structure**
+   * Creating a cohesive storytelling approach
+   * Designing section components for guided exploration
+   * Implementing smooth transitions between data insights
+
+3. **Improving UI Components**
+   * Developing filter controls for data exploration
+   * Implementing responsive layouts for all device sizes
+   * Creating accessible components following WCAG guidelines
+
+The core API layer and data processing pipeline are complete, with visualization components actively being developed to create an engaging, informative user experience. 
