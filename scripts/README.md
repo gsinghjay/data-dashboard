@@ -4,9 +4,12 @@ This directory contains scripts for processing the ACS PUMS data files and creat
 
 ## Scripts Overview
 
-- `download_acs_pumps.py` - Downloads ACS PUMS data files from the Census Bureau website
-- `process_data.py` - Processes the downloaded data files and creates an SQLite database
+- `process_data.py` - Main script for processing the ACS PUMS data files
 - `test_process.py` - Tests the processing script with a single year of data
+- `test_process_2022.py` - Test script with more detailed metrics for 2022
+- `test_specific_year.py` - Configurable test script to process any specific year with detailed metrics
+- `process_all_years_sequentially.sh` - Shell script to process all years one by one
+- `combine_databases.py` - Combines individual year databases into a final comprehensive database
 
 ## Data Processing Approach
 
@@ -61,32 +64,49 @@ The SCHL codes from the ACS PUMS data are grouped into the following education l
 6. **Master's Degree**: SCHL code 22
 7. **Professional/Doctorate Degree**: SCHL codes 23-24
 
+## Note on 2006-2007 Data
+
+While our database contains data from 2006-2007, these years only include information for two education categories ("Less than High School" and "High School Diploma") rather than the full seven categories available from 2008 onward. For consistency in analysis and visualization, our primary focus is on the 2008-2023 period.
+
 ## Usage
 
-### Running the Test Script
+### Running the Test Script for a Specific Year
 
-To test the data processing with just one year (2023):
+To test the data processing with a specific year:
 
 ```bash
-python scripts/test_process.py
+python scripts/test_specific_year.py 2023
 ```
 
-### Processing All Years
+### Processing All Years Sequentially
 
-To process all years and create the complete database:
+To process all years sequentially:
 
 ```bash
-python scripts/process_data.py
+./scripts/process_all_years_sequentially.sh
 ```
 
 This will:
-1. Process each year's data (2006-2023)
-2. Calculate fertility rates
-3. Create the SQLite database at `scripts/data/db/fertility_education.db`
+1. Process each year's data (2006-2023) one by one
+2. Calculate fertility rates for each year
+3. Create individual SQLite databases for each year
+
+### Combining Individual Databases
+
+After processing all years individually, combine them into a final database:
+
+```bash
+python scripts/combine_databases.py
+```
+
+This will create the combined SQLite database at `scripts/data/db/fertility_education.db`
 
 ### Expected Runtime
 
 - Test script (single year): ~5-10 minutes
-- Full processing (all years): Several hours, depending on system performance
+- Full sequential processing (all years): Several hours, depending on system performance
+- Database combination: ~10-15 minutes
 
-The script includes logging to track progress and identify any issues. 
+The scripts include logging to track progress and identify any issues. The logs are saved to:
+- `acs_data_processing.log` - Log for individual year processing
+- `combine_databases.log` - Log for database combination process 
