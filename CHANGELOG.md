@@ -1,6 +1,20 @@
 # CHANGELOG
 
 
+## v1.15.0 (2025-05-11)
+
+### Features
+
+- Add FertilityPandemicChart component for pandemic visualization
+  ([`4ac3e8d`](https://github.com/gsinghjay/data-dashboard/commit/4ac3e8dda5045911b489e4db2fd3dc2c8161c651))
+
+- Export FertilityPandemicChart in charts index
+  ([`979cba5`](https://github.com/gsinghjay/data-dashboard/commit/979cba5937f208e96373c56c1ac210ee4add69dd))
+
+- Integrate pandemic visualization into narrative flow
+  ([`4be0b63`](https://github.com/gsinghjay/data-dashboard/commit/4be0b63cbaf9ee24b2bdb38cde0ea98b9d1d3e25))
+
+
 ## v1.14.0 (2025-05-11)
 
 ### Features
