@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v1.10.0 (2025-05-11)
+
+### Features
+
+- **charts**: Add configurable props to FertilityBarChart for flexible usage
+  ([`d84663b`](https://github.com/gsinghjay/data-dashboard/commit/d84663ba83840717173bb7fcc4fba7a856bc8c55))
+
+### Refactoring
+
+- **home**: Update FertilityBarChart usage to prevent UI duplication
+  ([`b07b102`](https://github.com/gsinghjay/data-dashboard/commit/b07b10265601a3b226ac35124b68fccc9f68227e))
+
+
 ## v1.9.0 (2025-05-11)
 
 ### Documentation
