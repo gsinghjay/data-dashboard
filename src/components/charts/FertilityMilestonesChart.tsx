@@ -173,7 +173,7 @@ const FertilityMilestonesChart: React.FC<FertilityMilestonesChartProps> = ({
       top: chartStyles.margin.top,
       right: chartStyles.margin.right,
       bottom: chartStyles.margin.bottom + 80, // User increased space for x-axis labels
-      left: chartStyles.margin.left + (showPercentage ? 30 : 40) // More space for y-axis label
+      left: chartStyles.margin.left + (showPercentage ? 40 : 70) // Much more space for y-axis label and leftmost tooltip
     };
     const width = chartWidth - margin.left - margin.right;
     const height = chartHeight - margin.top - margin.bottom;
@@ -294,7 +294,20 @@ const FertilityMilestonesChart: React.FC<FertilityMilestonesChartProps> = ({
         const svgElement = chartRef.current?.querySelector('svg');
         const svgRect = svgElement?.getBoundingClientRect();
         const barX = x(d.milestone) || 0;
-        const barY = d.absoluteDiff >= 0 ? y(d.absoluteDiff) : y(0);
+        const value = showPercentage ? d.percentDiff : d.absoluteDiff;
+        const barY = value >= 0 ? y(value) : y(0);
+        
+        // We'll set the Y position in the special adjustment below
+        
+        // For the leftmost bar (Completing High School), adjust X and Y position to prevent cutoff
+        const adjustedX = d.milestone === 'Completing High School'
+          ? barX + x.bandwidth() * 0.8  // Shift right for leftmost bar
+          : barX + x.bandwidth() / 2;   // Center for other bars
+          
+        // Special Y adjustment for leftmost bar to bring the tooltip down
+        const adjustedY = d.milestone === 'Completing High School'
+          ? y(0) + 50  // Force position below the chart for leftmost bar
+          : (value >= 0 ? barY - 5 : barY + 5); // Standard positioning for other bars
         
         // Update tooltip data
         setTooltipData({
@@ -305,8 +318,8 @@ const FertilityMilestonesChart: React.FC<FertilityMilestonesChartProps> = ({
           toRate: d.toRate,
           absoluteDiff: d.absoluteDiff,
           percentDiff: d.percentDiff,
-          x: barX + x.bandwidth() / 2,
-          y: barY
+          x: adjustedX,
+          y: adjustedY
         });
         setTooltipOpen(true);
       })
@@ -429,7 +442,9 @@ const FertilityMilestonesChart: React.FC<FertilityMilestonesChartProps> = ({
           '&::-webkit-scrollbar-track': {
             backgroundColor: theme.palette.grey[100],
           },
-          pb: 4
+          pb: 4,
+          pl: isMobile ? 1 : 0, // Add extra padding on mobile to prevent leftmost tooltip cutoff
+          pr: isMobile ? 1 : 0  // Balance with right padding
         }}
         onMouseLeave={handleMouseLeave}
       >
@@ -438,35 +453,44 @@ const FertilityMilestonesChart: React.FC<FertilityMilestonesChartProps> = ({
             <Box
               sx={{
                 position: 'absolute',
-                top: tooltipData.y - 60,
-                left: tooltipData.x,
-                transform: 'translateX(-50%)',
+                // Different positioning for leftmost tooltip and other tooltips
+                ...tooltipData.milestone === 'Completing High School' 
+                  ? {
+                      // Special positioning for leftmost bar tooltip - place at bottom of chart
+                      bottom: 30,
+                      left: 25,
+                      transform: 'none',
+                    }
+                  : {
+                      // Normal positioning for other tooltips
+                      top: (showPercentage ? tooltipData.percentDiff : tooltipData.absoluteDiff) >= 0 
+                        ? tooltipData.y - 80 // Position above for positive values
+                        : tooltipData.y + 10, // Position below for negative values
+                      left: tooltipData.x,
+                      transform: 'translateX(-50%)',
+                    },
                 backgroundColor: 'rgba(38, 50, 56, 0.95)',
                 color: 'white',
-                padding: 1.5,
+                padding: 1,  // Reduced padding
                 borderRadius: 1,
                 zIndex: 1500,
-                maxWidth: 250,
+                maxWidth: 180, // Further reduced max width
                 pointerEvents: 'none',
                 boxShadow: theme.shadows[3],
+                fontSize: '0.85rem', // Slightly smaller font
               }}
             >
-              <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 0.5, color: 'white' }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 0.25, color: 'white', fontSize: '0.8rem' }}>
                 {tooltipData.milestone}
               </Typography>
-              <Typography variant="body2" sx={{ color: 'white' }}>
-                From: <strong>{tooltipData.fromGroup}</strong> ({tooltipData.fromRate.toFixed(1)})
+              <Typography sx={{ color: 'white', fontSize: '0.75rem', lineHeight: 1.2 }}>
+                <strong>{tooltipData.fromGroup}</strong> ({tooltipData.fromRate.toFixed(1)}) → <strong>{tooltipData.toGroup}</strong> ({tooltipData.toRate.toFixed(1)})
               </Typography>
-              <Typography variant="body2" sx={{ color: 'white' }}>
-                To: <strong>{tooltipData.toGroup}</strong> ({tooltipData.toRate.toFixed(1)})
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'white', mt: 0.5 }}>
-                <strong>
-                  {showPercentage 
-                    ? `${tooltipData.percentDiff > 0 ? '+' : ''}${tooltipData.percentDiff.toFixed(1)}%` 
-                    : `${tooltipData.absoluteDiff > 0 ? '+' : ''}${tooltipData.absoluteDiff.toFixed(1)} per 1,000`
-                  }
-                </strong>
+              <Typography sx={{ color: 'white', mt: 0.25, fontSize: '0.8rem', fontWeight: 'bold' }}>
+                {showPercentage 
+                  ? `${tooltipData.percentDiff > 0 ? '+' : ''}${tooltipData.percentDiff.toFixed(1)}%` 
+                  : `${tooltipData.absoluteDiff > 0 ? '+' : ''}${tooltipData.absoluteDiff.toFixed(1)} per 1,000`
+                }
               </Typography>
             </Box>
           </Fade>
