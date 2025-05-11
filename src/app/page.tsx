@@ -1,23 +1,14 @@
 "use client";
 
-import { Box, Typography, Paper, Grid, Card, CardContent, Divider, Button, Chip, Link as MuiLink } from '@mui/material';
-import BarChartIcon from '@mui/icons-material/BarChart';
-import TimelineIcon from '@mui/icons-material/Timeline';
-import PublicIcon from '@mui/icons-material/Public';
-import InfoIcon from '@mui/icons-material/Info';
+import { Box, Typography, Paper, Divider, Button, Chip } from '@mui/material';
 import PaletteIcon from '@mui/icons-material/Palette';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { useState } from 'react';
-import FertilityBarChart from '@/components/charts/FertilityBarChart';
-import FertilityLineChart from '@/components/charts/FertilityLineChart';
-import FertilityMapChart from '@/components/charts/FertilityMapChart';
 import Link from 'next/link';
 import { educationColors } from '@/utils/theme';
-import { isLightColor, getAccessibleTextColor } from '@/utils/chartHelpers';
+import { getAccessibleTextColor } from '@/utils/chartHelpers';
+import NarrativeFlow from '@/components/layout/NarrativeFlow';
 
 export default function Home() {
-  const [showDesignSystem, setShowDesignSystem] = useState(false);
-
   return (
     <>
       <Box sx={{ mb: 5 }}>
@@ -85,179 +76,8 @@ export default function Home() {
         </Button>
       </Paper>
 
-      <Grid container spacing={3}>
-        {/* Bar Chart */}
-        <Grid item xs={12}>
-          <Paper elevation={1} sx={{ p: 0, overflow: 'hidden', borderRadius: 2 }}>
-            <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
-              <Typography variant="h4" gutterBottom>
-                Fertility Rates by Education Level
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Compare fertility rates across different education groups, with options to view data by year and make comparisons.
-              </Typography>
-            </Box>
-            <Box sx={{ p: { xs: 1, md: 2 } }}>
-              <FertilityBarChart showTitle={false} embedded={true} />
-            </Box>
-          </Paper>
-        </Grid>
-        
-        {/* Line Chart */}
-        <Grid item xs={12}>
-          <Paper elevation={1} sx={{ p: 0, overflow: 'hidden', borderRadius: 2, mt: 3 }}>
-            <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
-              <Typography variant="h4" gutterBottom>
-                Fertility Rate Trends Over Time
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Analyze how fertility rates have changed over time (2008-2023) across different education levels.
-              </Typography>
-            </Box>
-            <Box sx={{ p: { xs: 1, md: 2 } }}>
-              <FertilityLineChart showTitle={false} embedded={true} />
-            </Box>
-          </Paper>
-        </Grid>
-        
-        {/* Map Chart */}
-        <Grid item xs={12}>
-          <Paper elevation={1} sx={{ p: 0, overflow: 'hidden', borderRadius: 2, mt: 3 }}>
-            <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
-              <Typography variant="h4" gutterBottom>
-                Geographic Fertility Rate Patterns
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Explore how fertility rates vary across different states and regions of the United States.
-              </Typography>
-            </Box>
-            <Box sx={{ p: { xs: 1, md: 2 } }}>
-              <FertilityMapChart showTitle={false} embedded={true} />
-            </Box>
-          </Paper>
-        </Grid>
-
-        {/* Visualization Types */}
-        <Grid item xs={12}>
-          <Typography variant="h3" gutterBottom sx={{ mt: 2 }}>
-            Visualization Types
-          </Typography>
-          <Typography variant="body1" paragraph color="text.secondary" sx={{ mb: 3 }}>
-            Explore our data through multiple visualization types, each providing unique insights into the relationship between education and fertility.
-          </Typography>
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <Card sx={{ height: '100%' }} elevation={1}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <BarChartIcon sx={{ mr: 1, color: 'primary.main' }} />
-                <Typography variant="h5" component="h3">
-                  Education Comparison
-                </Typography>
-              </Box>
-              <Typography paragraph color="text.secondary">
-                Bar charts showing fertility rates by educational attainment, from less than high school to professional/doctorate degrees.
-              </Typography>
-              <Typography variant="caption" color="success.main">
-                Available now
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <Card sx={{ height: '100%' }} elevation={1}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <TimelineIcon sx={{ mr: 1, color: 'primary.main' }} />
-                <Typography variant="h5" component="h3">
-                  Trend Analysis
-                </Typography>
-              </Box>
-              <Typography paragraph color="text.secondary">
-                Line charts tracking fertility trends over time (2008-2023), showing how the relationship between education and fertility has evolved.
-              </Typography>
-              <Typography variant="caption" color="success.main">
-                Available now
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <Card sx={{ height: '100%' }} elevation={1}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <PublicIcon sx={{ mr: 1, color: 'primary.main' }} />
-                <Typography variant="h5" component="h3">
-                  Geographic View
-                </Typography>
-              </Box>
-              <Typography paragraph color="text.secondary">
-                Choropleth maps displaying geographic variations in fertility rates across all 50 states and the District of Columbia.
-              </Typography>
-              <Typography variant="caption" color="success.main">
-                Available now
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Key Findings and Data Sources */}
-        <Grid item xs={12}>
-          <Typography variant="h3" gutterBottom sx={{ mt: 4 }}>
-            About the Project
-          </Typography>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3, height: '100%' }} elevation={1}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <InfoIcon sx={{ mr: 1, color: 'secondary.main' }} />
-              <Typography variant="h4" component="h3" color="secondary">
-                Key Findings
-              </Typography>
-            </Box>
-            <Typography component="ul" sx={{ pl: 2 }}>
-              <Typography component="li" paragraph sx={{ display: 'list-item' }}>
-                Higher educational attainment shows a complex relationship with fertility rates
-              </Typography>
-              <Typography component="li" paragraph sx={{ display: 'list-item' }}>
-                Fertility patterns vary significantly by state and region
-              </Typography>
-              <Typography component="li" paragraph sx={{ display: 'list-item' }}>
-                The relationship between education and fertility has evolved over time
-              </Typography>
-              <Typography component="li" paragraph sx={{ display: 'list-item' }}>
-                Educational milestones correspond to significant changes in fertility patterns
-              </Typography>
-            </Typography>
-          </Paper>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3, height: '100%' }} elevation={1}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <InfoIcon sx={{ mr: 1, color: 'secondary.main' }} />
-              <Typography variant="h4" component="h3" color="secondary">
-                Data Sources
-              </Typography>
-            </Box>
-            <Typography paragraph>
-              This dashboard uses data from the American Community Survey (ACS) Public Use Microdata Sample (PUMS) from 2008-2023.
-            </Typography>
-            <Typography paragraph>
-              The data focus on women aged 15-50 years and their fertility within the past 12 months, categorized by seven education levels.
-            </Typography>
-            <Typography paragraph>
-              <MuiLink href="https://www.census.gov/programs-surveys/acs/microdata.html" target="_blank" rel="noopener noreferrer">
-                Learn more about ACS PUMS data →
-              </MuiLink>
-            </Typography>
-          </Paper>
-        </Grid>
-      </Grid>
+      {/* Narrative Flow */}
+      <NarrativeFlow />
     </>
   );
 }
