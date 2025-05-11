@@ -123,13 +123,13 @@ def main():
         year_conn = sqlite3.connect(year_db)
         
         # Extract data from fertility_rates table
-        df = pd.read_sql_query("SELECT * FROM fertility_rates", year_conn)
+        df = pd.read_sql_query("SELECT year, state_code, state_name, education_group, women_count, births, fertility_rate FROM fertility_rates", year_conn)
         all_fertility_data.append(df)
         
         # Extract education_groups and states tables (only from first database)
         if year_db == year_dbs[0]:
-            education_groups = pd.read_sql_query("SELECT * FROM education_groups", year_conn)
-            states = pd.read_sql_query("SELECT * FROM states", year_conn)
+            education_groups = pd.read_sql_query("SELECT name, schl_codes, display_order FROM education_groups", year_conn)
+            states = pd.read_sql_query("SELECT code, name FROM states", year_conn)
             
             # Insert into final database
             education_groups.to_sql('education_groups', final_conn, if_exists='append', index=False)
