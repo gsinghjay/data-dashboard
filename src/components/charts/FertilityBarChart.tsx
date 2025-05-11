@@ -43,7 +43,15 @@ const EDUCATION_GROUPS = [
   'Professional/Doctorate Degree'
 ];
 
-const FertilityBarChart: React.FC = () => {
+interface FertilityBarChartProps {
+  showTitle?: boolean;
+  embedded?: boolean;
+}
+
+const FertilityBarChart: React.FC<FertilityBarChartProps> = ({ 
+  showTitle = true,
+  embedded = false 
+}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<NationalTrendData[]>([]);
@@ -140,16 +148,9 @@ const FertilityBarChart: React.FC = () => {
   // Calculate bar width based on comparison mode and screen size
   const barWidth = isMobile ? '95%' : (showComparison ? '45%' : '80%');
   
-  return (
-    <Paper 
-      elevation={1} 
-      sx={{ 
-        p: { xs: 1.5, sm: 2, md: 3 }, 
-        m: { xs: 1, sm: 2 },
-        maxWidth: '100%',
-        overflow: 'hidden'
-      }}
-    >
+  // Chart content
+  const chartContent = (
+    <>
       <Box sx={{ 
         display: 'flex', 
         flexDirection: isMobile ? 'column' : 'row',
@@ -158,9 +159,11 @@ const FertilityBarChart: React.FC = () => {
         mb: 2,
         gap: 2
       }}>
-        <Typography variant="h4" sx={{ flexShrink: 0 }}>
-          Fertility Rates by Education Level
-        </Typography>
+        {showTitle && (
+          <Typography variant="h4" sx={{ flexShrink: 0 }}>
+            Fertility Rates by Education Level
+          </Typography>
+        )}
         
         <Stack 
           direction={isMobile ? 'column' : 'row'} 
@@ -516,6 +519,23 @@ const FertilityBarChart: React.FC = () => {
       >
         * Chart shows fertility rates (births per 1,000 women aged 15-50) by education level.
       </Typography>
+    </>
+  );
+  
+  // Return chart with or without Paper container based on embedded prop
+  return embedded ? (
+    chartContent
+  ) : (
+    <Paper 
+      elevation={1} 
+      sx={{ 
+        p: { xs: 1.5, sm: 2, md: 3 }, 
+        m: { xs: 1, sm: 2 },
+        maxWidth: '100%',
+        overflow: 'hidden'
+      }}
+    >
+      {chartContent}
     </Paper>
   );
 };
