@@ -189,4 +189,35 @@ We are currently focused on:
    * Implementing responsive layouts for all device sizes
    * Creating accessible components following WCAG guidelines
 
-The core API layer and data processing pipeline are complete, with visualization components actively being developed to create an engaging, informative user experience. 
+The core API layer and data processing pipeline are complete, with visualization components actively being developed to create an engaging, informative user experience.
+
+## 🔜 Next Development Steps
+
+Before implementing the full narrative structure, we plan to build these additional visualization components:
+
+1. **Time Trend Visualization**
+   * Interactive line chart showing fertility trends over time (2008-2023)
+   * Option to select and compare multiple education groups
+   * Year range selection functionality
+   * Animated transitions between different data views
+
+2. **Geographic Comparison Map**
+   * Choropleth map of the United States showing state-level fertility rates
+   * Ability to filter by education level
+   * Color-coded visualization showing regional patterns
+   * Tooltips with detailed state-specific data
+
+3. **Education Comparison Component**
+   * Visualization comparing fertility across education levels
+   * Ability to view data for specific states or nationwide
+   * Interactive elements to highlight differences
+   * Option to normalize data to better show relative changes
+
+4. **Filter Controls Panel**
+   * Unified filtering component for controlling all visualizations
+   * Year range selectors
+   * Education level multi-select
+   * State selection functionality
+   * Save/reset filter settings options
+
+These components will form the building blocks for our narrative-driven dashboard, allowing us to create a cohesive story about the relationship between education and fertility rates. 
