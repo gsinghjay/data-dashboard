@@ -96,7 +96,7 @@ export default function Home() {
               </Typography>
             </Box>
             <Box sx={{ p: { xs: 1, md: 2 } }}>
-              <FertilityBarChart />
+              <FertilityBarChart showTitle={false} embedded={true} />
             </Box>
           </Paper>
         </Grid>
