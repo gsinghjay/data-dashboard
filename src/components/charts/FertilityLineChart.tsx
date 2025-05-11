@@ -544,7 +544,15 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
         title={
           tooltipData ? (
             <Box>
-              <Typography variant="subtitle2">{tooltipData.education_group}</Typography>
+              <Typography 
+                variant="subtitle2" 
+                sx={{ 
+                  color: tooltipData ? getEducationColor(tooltipData.education_group) : 'inherit',
+                  fontWeight: 'bold'
+                }}
+              >
+                {tooltipData.education_group}
+              </Typography>
               <Typography variant="body2">
                 Rate: {tooltipData.fertility_rate.toFixed(1)} per 1,000 women
               </Typography>

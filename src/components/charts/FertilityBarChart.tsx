@@ -325,7 +325,15 @@ const FertilityBarChart: React.FC<FertilityBarChartProps> = ({
                   <Tooltip
                     title={
                       <Box>
-                        <Typography variant="subtitle2">{educGroup}</Typography>
+                        <Typography 
+                          variant="subtitle2"
+                          sx={{
+                            color: educationColor,
+                            fontWeight: 'bold'
+                          }}
+                        >
+                          {educGroup}
+                        </Typography>
                         <Typography variant="body2">
                           Rate: {item.fertility_rate ? item.fertility_rate.toFixed(1) : 'N/A'} per 1,000 women
                         </Typography>
@@ -385,7 +393,15 @@ const FertilityBarChart: React.FC<FertilityBarChartProps> = ({
                     <Tooltip
                       title={
                         <Box>
-                          <Typography variant="subtitle2">{educGroup}</Typography>
+                          <Typography 
+                            variant="subtitle2"
+                            sx={{
+                              color: educationColor,
+                              fontWeight: 'bold'
+                            }}
+                          >
+                            {educGroup}
+                          </Typography>
                           <Typography variant="body2">
                             Rate: {comparisonItem.fertility_rate ? comparisonItem.fertility_rate.toFixed(1) : 'N/A'} per 1,000 women
                           </Typography>
