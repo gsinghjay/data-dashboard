@@ -209,6 +209,50 @@ const NarrativeFlow: React.FC = () => {
                     Higher education provided resilience during economic crises
                   </Typography>
                 </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ 
+                    width: 16, 
+                    height: 16, 
+                    borderRadius: '50%', 
+                    backgroundColor: '#78909C' 
+                  }} />
+                  <Typography>
+                    "Less than High School" group saw 42% decline from 2008 (55.08) to 2023 (31.91)
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ 
+                    width: 16, 
+                    height: 16, 
+                    borderRadius: '50%', 
+                    backgroundColor: '#2962FF' 
+                  }} />
+                  <Typography>
+                    Utah has highest state fertility for Bachelor's degree holders (82.5 vs. DC's 18.82)
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ 
+                    width: 16, 
+                    height: 16, 
+                    borderRadius: '50%', 
+                    backgroundColor: '#64B5F6' 
+                  }} />
+                  <Typography>
+                    Bachelor's-to-Master's transition shows largest positive fertility change (+8.4%)
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ 
+                    width: 16, 
+                    height: 16, 
+                    borderRadius: '50%', 
+                    backgroundColor: '#311B92' 
+                  }} />
+                  <Typography>
+                    Pandemic impact: Professional/Doctorate group showed 5.2% increase in 2021 vs. 2019
+                  </Typography>
+                </Box>
               </Box>
             </Paper>
           }
