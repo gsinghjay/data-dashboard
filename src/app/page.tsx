@@ -10,6 +10,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useState } from 'react';
 import FertilityBarChart from '@/components/charts/FertilityBarChart';
 import FertilityLineChart from '@/components/charts/FertilityLineChart';
+import FertilityMapChart from '@/components/charts/FertilityMapChart';
 import Link from 'next/link';
 import { educationColors } from '@/utils/theme';
 import { isLightColor, getAccessibleTextColor } from '@/utils/chartHelpers';
@@ -118,11 +119,28 @@ export default function Home() {
             </Box>
           </Paper>
         </Grid>
+        
+        {/* Map Chart */}
+        <Grid item xs={12}>
+          <Paper elevation={1} sx={{ p: 0, overflow: 'hidden', borderRadius: 2, mt: 3 }}>
+            <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
+              <Typography variant="h4" gutterBottom>
+                Geographic Fertility Rate Patterns
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                Explore how fertility rates vary across different states and regions of the United States.
+              </Typography>
+            </Box>
+            <Box sx={{ p: { xs: 1, md: 2 } }}>
+              <FertilityMapChart showTitle={false} embedded={true} />
+            </Box>
+          </Paper>
+        </Grid>
 
         {/* Visualization Types */}
         <Grid item xs={12}>
           <Typography variant="h3" gutterBottom sx={{ mt: 2 }}>
-            Upcoming Visualizations
+            Visualization Types
           </Typography>
           <Typography variant="body1" paragraph color="text.secondary" sx={{ mb: 3 }}>
             Explore our data through multiple visualization types, each providing unique insights into the relationship between education and fertility.
@@ -179,8 +197,8 @@ export default function Home() {
               <Typography paragraph color="text.secondary">
                 Choropleth maps displaying geographic variations in fertility rates across all 50 states and the District of Columbia.
               </Typography>
-              <Typography variant="caption" color="text.secondary">
-                Coming soon
+              <Typography variant="caption" color="success.main">
+                Available now
               </Typography>
             </CardContent>
           </Card>
