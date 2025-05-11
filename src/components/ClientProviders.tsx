@@ -63,6 +63,10 @@ const ClientProviders: React.FC<ClientProvidersProps> = ({ children }) => {
     root.style.setProperty('--text-primary', theme.palette.text.primary);
     root.style.setProperty('--text-secondary', theme.palette.text.secondary);
     
+    // Apply font variables for narrative section
+    root.style.setProperty('--font-sans', '"Inter", sans-serif');
+    root.style.setProperty('--font-serif', '"Source Serif Pro", serif');
+    
     return () => {
       // No cleanup needed for CSS variables or background color
       // Fonts should be cached by the browser
