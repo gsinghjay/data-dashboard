@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v1.9.0 (2025-05-11)
+
+### Documentation
+
+- Update README with design system implementation details
+  ([`dd22f91`](https://github.com/gsinghjay/data-dashboard/commit/dd22f91f071c9f2a88adb98fd6f39e73dfc4b442))
+
+### Features
+
+- **home**: Enhance homepage with design system showcase
+  ([`7823237`](https://github.com/gsinghjay/data-dashboard/commit/782323714dd3b994e53ed73d1c0bf936e3142b8e))
+
+
 ## v1.8.0 (2025-05-11)
 
 ### Bug Fixes
