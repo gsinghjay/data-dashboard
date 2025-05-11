@@ -105,8 +105,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+archive/
 .cursorrules
 .cursor/
 .repomix-output.txt
 .repomixignore
-local-docs/
+memory-bank/
+acs_pums_data/
