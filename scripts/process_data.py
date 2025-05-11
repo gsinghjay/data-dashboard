@@ -81,13 +81,33 @@ def process_year(year):
         return None
     
     try:
+        # Column positions from verification document for fallback
+        column_positions = {
+            # Year: {column: position}
+            2006: {"ST": 5, "PWGTP": 7, "AGEP": 8, "FER": 18, "SCHL": 53, "SEX": 55},
+            2007: {"ST": 5, "PWGTP": 7, "AGEP": 8, "FER": 18, "SCHL": 53, "SEX": 55},
+            2008: {"ST": 5, "PWGTP": 7, "AGEP": 8, "FER": 21, "SCHL": 67, "SEX": 69},
+            2009: {"ST": 5, "PWGTP": 7, "AGEP": 8, "FER": 21, "SCHL": 67, "SEX": 69},
+            2010: {"ST": 5, "PWGTP": 7, "AGEP": 8, "FER": 21, "SCHL": 67, "SEX": 69},
+            2011: {"ST": 5, "PWGTP": 7, "AGEP": 8, "FER": 21, "SCHL": 67, "SEX": 69},
+            2012: {"ST": 5, "PWGTP": 7, "AGEP": 8, "FER": 21, "SCHL": 67, "SEX": 69},
+            2013: {"ST": 5, "PWGTP": 7, "AGEP": 8, "FER": 21, "SCHL": 65, "SEX": 67},
+            2014: {"ST": 5, "PWGTP": 7, "AGEP": 8, "FER": 21, "SCHL": 65, "SEX": 67},
+            2015: {"ST": 5, "PWGTP": 7, "AGEP": 8, "FER": 21, "SCHL": 65, "SEX": 67},
+            2016: {"ST": 5, "PWGTP": 7, "AGEP": 8, "FER": 21, "SCHL": 66, "SEX": 68},
+            2017: {"ST": 7, "PWGTP": 9, "AGEP": 10, "FER": 23, "SCHL": 67, "SEX": 69},
+            2018: {"ST": 7, "PWGTP": 9, "AGEP": 10, "FER": 23, "SCHL": 67, "SEX": 69},
+            2019: {"ST": 7, "PWGTP": 9, "AGEP": 10, "FER": 23, "SCHL": 68, "SEX": 70},
+            2020: {"ST": 7, "PWGTP": 9, "AGEP": 10, "FER": 23, "SCHL": 68, "SEX": 70},
+            2021: {"ST": 7, "PWGTP": 9, "AGEP": 10, "FER": 23, "SCHL": 67, "SEX": 69},
+            2022: {"ST": 7, "PWGTP": 9, "AGEP": 10, "FER": 23, "SCHL": 67, "SEX": 69},
+            2023: {"STATE": 7, "PWGTP": 9, "AGEP": 10, "FER": 23, "SCHL": 67, "SEX": 69}
+        }
+
         # For 2023, the column name is STATE instead of ST
         columns_to_use = REQUIRED_COLUMNS.copy()
         if year == 2023:
             columns_to_use[0] = "STATE"  # Replace ST with STATE
-        
-        # Read only necessary columns from the CSV file
-        logger.info(f"Reading CSV file: {csv_path}")
         
         # First check if the file has a header
         with open(csv_path, 'r') as f:
@@ -98,20 +118,52 @@ def process_year(year):
         
         logger.info(f"File has header: {has_header}")
         
-        # Read the CSV file
-        df = pd.read_csv(
-            csv_path,
-            usecols=columns_to_use,
-            dtype={
-                "PWGTP": "int32",
-                "AGEP": "int16",
-                "SEX": "int8",
-                "SCHL": "float32",  # Some values have decimal points
-                "FER": "float32"    # Some values have decimal points
-            },
-            header=0 if has_header else None,
-            low_memory=False
-        )
+        if has_header:
+            # Read the CSV file using column names
+            df = pd.read_csv(
+                csv_path,
+                usecols=columns_to_use,
+                dtype={
+                    "PWGTP": "int32",
+                    "AGEP": "int16",
+                    "SEX": "int8",
+                    "SCHL": "float32",  # Some values have decimal points
+                    "FER": "float32"    # Some values have decimal points
+                },
+                header=0,
+                low_memory=False
+            )
+        else:
+            # Fallback to position-based reading if no header
+            logger.info(f"No header detected, using column positions from verification document")
+            if year not in column_positions:
+                logger.error(f"No column position data for year {year}, cannot process")
+                return None
+                
+            # Get column positions for this year
+            positions = column_positions[year]
+            
+            # Create a list of columns to use by position (0-indexed for pandas)
+            cols_by_position = [positions[col] - 1 if col in positions else None for col in columns_to_use]
+            
+            # Remove any None values (columns not found)
+            cols_by_position = [pos for pos in cols_by_position if pos is not None]
+            
+            # Read CSV using positions
+            df = pd.read_csv(
+                csv_path,
+                usecols=cols_by_position,
+                header=None,
+                names=columns_to_use,
+                dtype={
+                    "PWGTP": "int32",
+                    "AGEP": "int16", 
+                    "SEX": "int8",
+                    "SCHL": "float32",
+                    "FER": "float32"
+                },
+                low_memory=False
+            )
         
         # Standardize the state column name if needed
         if year == 2023:
