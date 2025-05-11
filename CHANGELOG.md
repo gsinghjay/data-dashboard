@@ -1,6 +1,42 @@
 # CHANGELOG
 
 
+## v1.13.0 (2025-05-11)
+
+### Bug Fixes
+
+- Prevent infinite loop in ref warnings suppression
+  ([`7f19d9a`](https://github.com/gsinghjay/data-dashboard/commit/7f19d9afb698ef4e7ca8e618028d1ee03a0105b2))
+
+### Code Style
+
+- Update footer with project information
+  ([`9021efb`](https://github.com/gsinghjay/data-dashboard/commit/9021efb6d7f201d30033e5179930a00b6762e133))
+
+### Features
+
+- Add font variables for narrative typography
+  ([`0d4a77c`](https://github.com/gsinghjay/data-dashboard/commit/0d4a77cc888d8320447fed267d72cff224230574))
+
+- Add navigation sidebar for narrative sections
+  ([`ec6d9ff`](https://github.com/gsinghjay/data-dashboard/commit/ec6d9ff1a6a529d139313f12dde380a32cdf2e6b))
+
+- Create main narrative flow structure with sections
+  ([`7bf4e4d`](https://github.com/gsinghjay/data-dashboard/commit/7bf4e4d9dafb5dc625de3cd472c116d71bf0b26d))
+
+- Create narrative section component for scrollytelling
+  ([`460f694`](https://github.com/gsinghjay/data-dashboard/commit/460f694721bcf3af3e46248ec18ccb3723fa22a7))
+
+- Implement mobile navigation drawer for narrative
+  ([`c039c1d`](https://github.com/gsinghjay/data-dashboard/commit/c039c1d6155db0c8983769f2098abe4313214836))
+
+- Implement scroll context for narrative structure
+  ([`83f70b4`](https://github.com/gsinghjay/data-dashboard/commit/83f70b44cff65243563d991933d35ea0cf4a506d))
+
+- Integrate narrative flow into home page
+  ([`ba9a068`](https://github.com/gsinghjay/data-dashboard/commit/ba9a068f34a5da92871203379d68301060f363f3))
+
+
 ## v1.12.0 (2025-05-11)
 
 ### Bug Fixes
