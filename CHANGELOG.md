@@ -1,6 +1,25 @@
 # CHANGELOG
 
 
+## v1.16.0 (2025-05-11)
+
+### Features
+
+- Create essential question component
+  ([`4c1e5d4`](https://github.com/gsinghjay/data-dashboard/commit/4c1e5d491f11330f629c920c30713ab38527c236))
+
+- Enhance conclusion section with additional data-driven bullet points
+  ([`bb7b8e6`](https://github.com/gsinghjay/data-dashboard/commit/bb7b8e6380e58d82d28ab81df33ccb550ee852d2))
+
+- Update narrative flow to include conclusion section
+  ([`1e30c55`](https://github.com/gsinghjay/data-dashboard/commit/1e30c5572e6b2bebc05a31e48d2e1e3a90ba5f3e))
+
+### Refactoring
+
+- Replace design system section with essential question
+  ([`08f9351`](https://github.com/gsinghjay/data-dashboard/commit/08f9351a8c34e38729431dc079e3df85b0b1917a))
+
+
 ## v1.15.0 (2025-05-11)
 
 ### Features
