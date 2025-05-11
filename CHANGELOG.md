@@ -1,6 +1,55 @@
 # CHANGELOG
 
 
+## v1.8.0 (2025-05-11)
+
+### Bug Fixes
+
+- **providers**: Improve font loading and CSS variable handling
+  ([`30936df`](https://github.com/gsinghjay/data-dashboard/commit/30936df18524be588cf8db05c9f409bdd46e3928))
+
+### Code Style
+
+- **css**: Update global styles with design system variables
+  ([`2664314`](https://github.com/gsinghjay/data-dashboard/commit/26643149f3a8a35f33b4ced2cca89173c8fc4d9b))
+
+- **footer**: Apply design system styling
+  ([`be5b213`](https://github.com/gsinghjay/data-dashboard/commit/be5b21348eaf96e588e9fb7fd030f131c9bbeffc))
+
+- **header**: Apply design system styling
+  ([`f6d9917`](https://github.com/gsinghjay/data-dashboard/commit/f6d99172d91506e6359cd59d073cf80893525cfe))
+
+### Documentation
+
+- Update README with Educated Horizons design system details
+  ([`9190322`](https://github.com/gsinghjay/data-dashboard/commit/91903227b7147d701173f2c78ad702cf36cb408f))
+
+### Features
+
+- **components**: Add DesignSystemShowcase component
+  ([`2b93e79`](https://github.com/gsinghjay/data-dashboard/commit/2b93e7967344464a85b2a21ca2bf5d7efa5b783a))
+
+- **routes**: Add design system showcase page
+  ([`bf07324`](https://github.com/gsinghjay/data-dashboard/commit/bf0732456f00909b1b6bbc0499b36fe0e7c09e65))
+
+- **theme**: Implement Educated Horizons design system theme
+  ([`0478004`](https://github.com/gsinghjay/data-dashboard/commit/0478004777e06b64a29d2c9d530acd2ba9712ca2))
+
+- **utils**: Add chart helper utilities for design system
+  ([`b49e43a`](https://github.com/gsinghjay/data-dashboard/commit/b49e43aca18ac06266378cbbc6bcede6d3fb39b5))
+
+### Refactoring
+
+- **charts**: Update bar chart to use design system
+  ([`4c4b8bd`](https://github.com/gsinghjay/data-dashboard/commit/4c4b8bda6b1f27acbf47f7783cc71e28cb98adb8))
+
+- **home**: Update homepage to include design system showcase
+  ([`0b8fbcc`](https://github.com/gsinghjay/data-dashboard/commit/0b8fbccf594c84012436754b0b5a86bb0b656443))
+
+- **layout**: Update Layout to use theme provider
+  ([`19d0965`](https://github.com/gsinghjay/data-dashboard/commit/19d09655a1a6eba0592ff3b2b2de70fbe27aae06))
+
+
 ## v1.7.1 (2025-05-11)
 
 ### Bug Fixes
