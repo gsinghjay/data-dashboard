@@ -547,8 +547,8 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
               <Typography 
                 variant="subtitle2" 
                 sx={{ 
-                  color: tooltipData ? getEducationColor(tooltipData.education_group) : 'inherit',
-                  fontWeight: 'bold'
+                  fontWeight: 'bold',
+                  color: '#fff' // Explicitly set white color
                 }}
               >
                 {tooltipData.education_group}

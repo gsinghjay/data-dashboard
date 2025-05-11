@@ -328,8 +328,8 @@ const FertilityBarChart: React.FC<FertilityBarChartProps> = ({
                         <Typography 
                           variant="subtitle2"
                           sx={{
-                            color: educationColor,
-                            fontWeight: 'bold'
+                            fontWeight: 'bold',
+                            color: '#fff' // Explicitly set white color
                           }}
                         >
                           {educGroup}
@@ -396,8 +396,8 @@ const FertilityBarChart: React.FC<FertilityBarChartProps> = ({
                           <Typography 
                             variant="subtitle2"
                             sx={{
-                              color: educationColor,
-                              fontWeight: 'bold'
+                              fontWeight: 'bold',
+                              color: '#fff' // Explicitly set white color
                             }}
                           >
                             {educGroup}
