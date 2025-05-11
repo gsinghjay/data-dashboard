@@ -6,9 +6,7 @@ import { ScrollProvider } from '@/contexts/ScrollContext';
 import NarrativeNavigation from './NarrativeNavigation';
 import MobileNavigation from './MobileNavigation';
 import NarrativeSection from '../common/NarrativeSection';
-import FertilityBarChart from '@/components/charts/FertilityBarChart';
-import FertilityLineChart from '@/components/charts/FertilityLineChart';
-import FertilityMapChart from '@/components/charts/FertilityMapChart';
+import { FertilityBarChart, FertilityLineChart, FertilityMapChart, FertilityMilestonesChart } from '@/components/charts';
 
 // Define the sections for our narrative
 const SECTIONS = [
@@ -101,9 +99,7 @@ const NarrativeFlow: React.FC = () => {
           id="educational-milestones"
           title="The Impact of Degree Completion"
           backgroundColor="rgb(250, 250, 253)"
-          visualization={<Box sx={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <p>Educational milestone comparison visualization to be implemented</p>
-          </Box>}
+          visualization={<FertilityMilestonesChart showTitle={false} embedded={true} />}
           reversed={true}
         >
           <Box>
