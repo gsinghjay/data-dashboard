@@ -252,7 +252,18 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
     const minYear = years[0];
     const maxYear = years[years.length - 1];
 
-    // Create X scale
+    // Create X scale - using a point scale for even spacing
+    const xTickValues = isMobile 
+      ? [2008, 2012, 2016, 2020, 2023] // 5 values for mobile
+      : [2008, 2010, 2012, 2014, 2016, 2018, 2020, 2022, 2023]; // 9 values for desktop
+    
+    // Use a band scale for equally spaced ticks
+    const xBand = d3.scaleBand()
+      .domain(xTickValues.map(d => d.toString()))
+      .range([0, width])
+      .padding(0.1);
+    
+    // And a regular scale for the actual data points
     const x = d3.scaleLinear()
       .domain([minYear, maxYear])
       .range([0, width]);
@@ -271,14 +282,8 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
     svg.append('g')
       .attr('transform', `translate(0, ${height})`)
       .call(
-        d3.axisBottom(x)
-          // Use explicit tick values to ensure key years (including 2023) are displayed
-          .tickValues(
-            isMobile 
-              ? [2008, 2012, 2016, 2020, 2023] // 5 values for mobile
-              : [2008, 2010, 2012, 2014, 2016, 2018, 2020, 2022, 2023] // 9 values for desktop
-          )
-          .tickFormat((d: any) => d.toString())
+        d3.axisBottom(xBand)
+          .tickFormat((d: any) => d)
       )
       .attr('aria-label', 'Years')
       .selectAll("text")
@@ -309,13 +314,7 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
       .attr('class', 'grid x-grid')
       .attr('transform', `translate(0, ${height})`)
       .call(
-        d3.axisBottom(x)
-          // Use the same explicit tick values as the axis for consistent grid lines
-          .tickValues(
-            isMobile 
-              ? [2008, 2012, 2016, 2020, 2023] // 5 values for mobile
-              : [2008, 2010, 2012, 2014, 2016, 2018, 2020, 2022, 2023] // 9 values for desktop
-          )
+        d3.axisBottom(xBand)
           .tickSize(-height)
           .tickFormat(() => '')
       )
