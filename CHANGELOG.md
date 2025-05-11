@@ -1,6 +1,45 @@
 # CHANGELOG
 
 
+## v1.7.1 (2025-05-11)
+
+### Bug Fixes
+
+- Remove rounded corners from navbar
+  ([`1eb1be3`](https://github.com/gsinghjay/data-dashboard/commit/1eb1be39e5aee2de21cf4ce51740407581362a05))
+
+### Chores
+
+- Add data exports for visualization reference
+  ([`dfd7179`](https://github.com/gsinghjay/data-dashboard/commit/dfd717964e7a05c77a2ac4afc7f1148832c024d6))
+
+### Documentation
+
+- Add color scheme guidelines for Educated Horizons palette
+  ([`0af0aaa`](https://github.com/gsinghjay/data-dashboard/commit/0af0aaa4861103f5b06e33fef2ba51194a6fddcf))
+
+- Add data insights documentation for visualization design
+  ([`7ab0caf`](https://github.com/gsinghjay/data-dashboard/commit/7ab0caf31569549022e946316d959abd0e54e9a2))
+
+- Add detailed implementation specifications for design system
+  ([`9c591e3`](https://github.com/gsinghjay/data-dashboard/commit/9c591e36ecbe7d74b8c96f91ee1a8f12d67f31a9))
+
+- Add layout principles for dashboard structure
+  ([`489b544`](https://github.com/gsinghjay/data-dashboard/commit/489b5448e6ff552eae501ffcb661c985d535abac))
+
+- Add narrative structure documentation for storytelling flow
+  ([`79edf07`](https://github.com/gsinghjay/data-dashboard/commit/79edf076385de8081cae9dbaccc517e5333940b6))
+
+- Add next development steps to README
+  ([`d5364ea`](https://github.com/gsinghjay/data-dashboard/commit/d5364ea98de3b1ce434741e5e886ac8248524cbb))
+
+- Add typography and labeling guidelines for consistent UI
+  ([`4890fd1`](https://github.com/gsinghjay/data-dashboard/commit/4890fd1f72a23263b5f55b5259a336832fc1a2aa))
+
+- Update README with current project status and features
+  ([`49d5081`](https://github.com/gsinghjay/data-dashboard/commit/49d508109e5063fa0e79f6eb92981b80e9e060fd))
+
+
 ## v1.7.0 (2025-05-11)
 
 ### Bug Fixes
