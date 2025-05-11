@@ -145,6 +145,20 @@ We've created a comprehensive data processing pipeline to transform the raw ACS 
   * Shows detailed statistics on hover
   * Responsive design for all screen sizes
 
+* **"Educated Horizons" Design System**
+  * Custom color palette with meaningful education level progression:
+    * Less than High School: `#B0BEC5` (Blue Grey - Lightest)
+    * High School Diploma: `#78909C` (Blue Grey)
+    * Some College: `#64B5F6` (Light Blue)
+    * Associate's Degree: `#42A5F5` (Blue)
+    * Bachelor's Degree: `#2962FF` (Deep Indigo)
+    * Master's Degree: `#5E35B1` (Deep Purple)
+    * Professional/Doctorate Degree: `#311B92` (Dark Violet)
+  * Typography system with Inter (UI/body) and Source Serif Pro (headings)
+  * Consistent interaction patterns with 300-500ms animations
+  * WCAG-compliant accessibility standards (4.5:1 contrast ratio)
+  * Comprehensive documentation in `/docs` directory
+
 * **Planned Additional Visualizations**
   * Trend analysis with interactive line charts
   * Geographic patterns with choropleth maps
@@ -159,6 +173,7 @@ We've created a comprehensive data processing pipeline to transform the raw ACS 
 - [x] Full data processing (all years 2006-2023)
 - [x] Frontend project scaffolding
 - [x] API layer implementation
+- [x] Design system specification
 - [ ] Core UI components (in progress)
 - [ ] Visualization components (in progress)
   - [x] FertilityBarChart - Shows fertility rates by education level
@@ -174,22 +189,22 @@ We've created a comprehensive data processing pipeline to transform the raw ACS 
 
 We are currently focused on:
 
-1. **Enhancing Visualization Components**
+1. **Implementing Design System**
+   * Creating theme files with the "Educated Horizons" color palette
+   * Setting up typography with the selected font families
+   * Developing base visualization components with consistent styles
+   * Ensuring all UI elements meet accessibility requirements
+
+2. **Enhancing Visualization Components**
    * Refining the FertilityBarChart for better user experience
    * Implementing year comparison features
    * Developing additional visualization types
 
-2. **Building Narrative Structure**
-   * Creating a cohesive storytelling approach
-   * Designing section components for guided exploration
+3. **Building Narrative Structure**
+   * Implementing the six-section storytelling approach documented in `docs/narrative_structure.md`
+   * Creating section components for guided exploration
+   * Applying scrollytelling techniques with progressive revelation
    * Implementing smooth transitions between data insights
-
-3. **Improving UI Components**
-   * Developing filter controls for data exploration
-   * Implementing responsive layouts for all device sizes
-   * Creating accessible components following WCAG guidelines
-
-The core API layer and data processing pipeline are complete, with visualization components actively being developed to create an engaging, informative user experience.
 
 ## 🔜 Next Development Steps
 
