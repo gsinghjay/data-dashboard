@@ -1,0 +1,8 @@
+# Exclude large data directories
+acs_pums_data/
+archive/
+
+# Other patterns to ignore
+.git
+.next
+node_modules 
