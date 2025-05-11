@@ -13,6 +13,7 @@ const Header: React.FC = () => {
       elevation={0}
       sx={{ 
         borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
+        borderRadius: 0
       }}
     >
       <Container maxWidth="xl">
