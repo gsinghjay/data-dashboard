@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Box } from '@mui/material';
+import { Box, Typography, Paper } from '@mui/material';
 import { ScrollProvider } from '@/contexts/ScrollContext';
 import NarrativeNavigation from './NarrativeNavigation';
 import MobileNavigation from './MobileNavigation';
@@ -31,8 +31,8 @@ const SECTIONS = [
     title: 'Pandemic Effects',
   },
   {
-    id: 'interactive-exploration',
-    title: 'Interactive Exploration',
+    id: 'conclusion',
+    title: 'Conclusion',
   },
 ];
 
@@ -130,24 +130,148 @@ const NarrativeFlow: React.FC = () => {
           </Box>
         </NarrativeSection>
         
-        {/* Section 6: Interactive Exploration */}
+        {/* Section 6: Conclusion */}
         <NarrativeSection
-          id="interactive-exploration"
-          title="Your Own Discoveries"
+          id="conclusion"
+          title="Answering Our Essential Question"
           backgroundColor="rgb(250, 250, 253)"
-          visualization={<Box sx={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <p>Interactive exploration features to be implemented</p>
-          </Box>}
+          visualization={
+            <Paper elevation={0} sx={{ 
+              height: '100%', 
+              display: 'flex', 
+              flexDirection: 'column', 
+              justifyContent: 'center',
+              padding: 3,
+              backgroundColor: 'inherit' 
+            }}>
+              <Typography variant="h5" gutterBottom sx={{ fontFamily: "'Source Serif Pro', serif" }}>
+                How does a mother's education level influence her recent fertility?
+              </Typography>
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: 2, 
+                mt: 3,
+                fontFamily: "'Inter', sans-serif" 
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ 
+                    width: 16, 
+                    height: 16, 
+                    borderRadius: '50%', 
+                    backgroundColor: '#311B92' 
+                  }} />
+                  <Typography>
+                    Professional/Doctorate degrees show highest fertility (64.76 births per 1,000 women)
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ 
+                    width: 16, 
+                    height: 16, 
+                    borderRadius: '50%', 
+                    backgroundColor: '#B0BEC5' 
+                  }} />
+                  <Typography>
+                    Less than High School shows lowest fertility (31.91 births per 1,000 women)
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ 
+                    width: 16, 
+                    height: 16, 
+                    borderRadius: '50%', 
+                    backgroundColor: '#42A5F5' 
+                  }} />
+                  <Typography>
+                    16 years of data show consistent non-linear patterns
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ 
+                    width: 16, 
+                    height: 16, 
+                    borderRadius: '50%', 
+                    backgroundColor: '#00695C' 
+                  }} />
+                  <Typography>
+                    Geographic variations show up to 63.68 point difference within education groups
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ 
+                    width: 16, 
+                    height: 16, 
+                    borderRadius: '50%', 
+                    backgroundColor: '#5E35B1' 
+                  }} />
+                  <Typography>
+                    Higher education provided resilience during economic crises
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ 
+                    width: 16, 
+                    height: 16, 
+                    borderRadius: '50%', 
+                    backgroundColor: '#78909C' 
+                  }} />
+                  <Typography>
+                    "Less than High School" group saw 42% decline from 2008 (55.08) to 2023 (31.91)
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ 
+                    width: 16, 
+                    height: 16, 
+                    borderRadius: '50%', 
+                    backgroundColor: '#2962FF' 
+                  }} />
+                  <Typography>
+                    Utah has highest state fertility for Bachelor's degree holders (82.5 vs. DC's 18.82)
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ 
+                    width: 16, 
+                    height: 16, 
+                    borderRadius: '50%', 
+                    backgroundColor: '#64B5F6' 
+                  }} />
+                  <Typography>
+                    Bachelor's-to-Master's transition shows largest positive fertility change (+8.4%)
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ 
+                    width: 16, 
+                    height: 16, 
+                    borderRadius: '50%', 
+                    backgroundColor: '#311B92' 
+                  }} />
+                  <Typography>
+                    Pandemic impact: Professional/Doctorate group showed 5.2% increase in 2021 vs. 2019
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
+          }
           reversed={true}
         >
           <Box>
-            <p>Now it's your turn to explore the data and discover your own insights about the relationship between education and fertility.</p>
+            <p>Our exploration of ACS PUMS data from 2008-2023 has revealed clear answers to our essential question: <strong>How does a mother's education level influence her recent fertility?</strong></p>
             
-            <p>Use the interactive tools to select multiple states for comparison, choose specific education levels to display, and focus on particular time periods that interest you.</p>
+            <p>The relationship is strikingly non-linear. Our data conclusively shows that in 2023, women with Professional/Doctorate degrees had the highest fertility rates (64.76 births per 1,000 women), while those with less than a high school education had the lowest (31.91 births per 1,000 women).</p>
             
-            <p>You can toggle between different visualization types to gain new perspectives on the data, and save or share your view configurations with others.</p>
+            <p>This challenges conventional assumptions that higher education necessarily leads to lower fertility. Instead, we've uncovered a more nuanced relationship where educational attainment provides economic stability and career flexibility that can actually support family formation at the highest levels.</p>
             
-            <p>We've also included some preset "interesting findings" that you can quickly load to discover patterns you might have missed.</p>
+            <p>The historical data reveals resilience among the highly educated. From 2008 to 2023, women with less education experienced dramatic fertility declines (a 42% drop for those with less than high school), while women with advanced degrees maintained relatively stable rates even through economic downturns and the pandemic.</p>
+            
+            <p>Geographic analysis shows that while this pattern holds nationwide, significant regional variations exist, with Utah consistently showing higher fertility rates across all education levels compared to places like DC and Vermont. These regional differences suggest that cultural and policy environments interact with educational attainment to shape fertility decisions.</p>
+            
+            <p>The milestone analysis confirms that the bachelor's-to-master's transition represents a critical inflection point in the education-fertility relationship, where we see the largest positive change in fertility rates.</p>
+            
+            <p>Our conclusion: education's influence on fertility is complex and evolving. Rather than a simple inverse relationship, we find that the highest levels of education are associated with both career advancement and higher fertility, suggesting that educational policies that support work-family balance may help address demographic challenges in the modern economy.</p>
           </Box>
         </NarrativeSection>
       </Box>
