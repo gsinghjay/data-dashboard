@@ -1,6 +1,42 @@
 # CHANGELOG
 
 
+## v1.12.0 (2025-05-11)
+
+### Bug Fixes
+
+- Add warning suppression to client providers
+  ([`f01f168`](https://github.com/gsinghjay/data-dashboard/commit/f01f168f17d82aa047a60fb905bbe29e9249b075))
+
+- Increase map height and improve tooltip visibility in FertilityMapChart
+  ([`a4b1ff9`](https://github.com/gsinghjay/data-dashboard/commit/a4b1ff93aa29626b09abf8e642750e2cc471c3e0))
+
+- Update getStateComparison to support year filtering
+  ([`2203e4d`](https://github.com/gsinghjay/data-dashboard/commit/2203e4d66474fd5127af52f31d05389a04c022c6))
+
+### Chores
+
+- Downgrade React type definitions to match React 18
+  ([`4009553`](https://github.com/gsinghjay/data-dashboard/commit/400955330a1a538bfd1b840152553872237ef609))
+
+- Update Next.js config for better React 18 compatibility
+  ([`9f91096`](https://github.com/gsinghjay/data-dashboard/commit/9f91096d4879a24983e2e7ffbbc6f86aacdb8247))
+
+### Features
+
+- Add choropleth map component for state fertility visualization
+  ([`dfa9a30`](https://github.com/gsinghjay/data-dashboard/commit/dfa9a30364c358365132a6b759f466bc7688fce1))
+
+- Add hook to suppress React 19 ref warnings
+  ([`a1da151`](https://github.com/gsinghjay/data-dashboard/commit/a1da1518f4b3301c857e817efbca63955a4c0535))
+
+- Export chart components through index file
+  ([`f436af0`](https://github.com/gsinghjay/data-dashboard/commit/f436af0c2cbc500255bb0e22313761a23c8d9c6e))
+
+- Integrate choropleth map component on home page
+  ([`5da76f4`](https://github.com/gsinghjay/data-dashboard/commit/5da76f491d8bf284ec845c1b3899143dfeacd420))
+
+
 ## v1.11.0 (2025-05-11)
 
 ### Bug Fixes
