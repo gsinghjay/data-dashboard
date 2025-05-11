@@ -270,7 +270,16 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
     // Add X axis
     svg.append('g')
       .attr('transform', `translate(0, ${height})`)
-      .call(d3.axisBottom(x).ticks(isMobile ? 5 : 8).tickFormat((d: any) => d.toString()))
+      .call(
+        d3.axisBottom(x)
+          // Use explicit tick values to ensure key years (including 2023) are displayed
+          .tickValues(
+            isMobile 
+              ? [2008, 2012, 2016, 2020, 2023] // 5 values for mobile
+              : [2008, 2010, 2012, 2014, 2016, 2018, 2020, 2022, 2023] // 9 values for desktop
+          )
+          .tickFormat((d: any) => d.toString())
+      )
       .attr('aria-label', 'Years')
       .selectAll("text")
       .style('font-size', chartStyles.fontSize.axisLabel)
@@ -301,7 +310,12 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
       .attr('transform', `translate(0, ${height})`)
       .call(
         d3.axisBottom(x)
-          .ticks(isMobile ? 5 : 8)
+          // Use the same explicit tick values as the axis for consistent grid lines
+          .tickValues(
+            isMobile 
+              ? [2008, 2012, 2016, 2020, 2023] // 5 values for mobile
+              : [2008, 2010, 2012, 2014, 2016, 2018, 2020, 2022, 2023] // 9 values for desktop
+          )
           .tickSize(-height)
           .tickFormat(() => '')
       )
