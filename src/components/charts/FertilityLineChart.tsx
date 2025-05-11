@@ -597,22 +597,6 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
             }
           ]
         }}
-        componentsProps={{
-          tooltip: {
-            sx: {
-              bgcolor: 'background.paper',
-              color: 'text.primary',
-              boxShadow: theme.shadows[2],
-              fontSize: '0.75rem',
-              p: 1,
-              border: `1px solid ${theme.palette.divider}`,
-              maxWidth: 'none',
-              '& .MuiTooltip-arrow': {
-                color: 'background.paper',
-              }
-            }
-          }
-        }}
       >
         <Box 
           ref={tooltipRef}
