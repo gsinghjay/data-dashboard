@@ -22,6 +22,7 @@ import {
 } from '@mui/material';
 import { useData } from '@/contexts/DataContext';
 import { fetchNationalTrends } from '@/utils/api';
+import { getEducationColor, chartStyles } from '@/utils/chartHelpers';
 
 interface NationalTrendData {
   year: number;
@@ -40,17 +41,6 @@ const EDUCATION_GROUPS = [
   'Bachelor\'s Degree',
   'Master\'s Degree',
   'Professional/Doctorate Degree'
-];
-
-// Education level colors (from less to more education)
-const EDUCATION_COLORS = [
-  '#9e0142', // Less than HS - dark red
-  '#d53e4f', // HS Diploma - red
-  '#f46d43', // Some College - orange
-  '#fdae61', // Associate's - light orange 
-  '#66c2a5', // Bachelor's - light teal
-  '#3288bd', // Master's - blue
-  '#5e4fa2'  // Professional/Doctorate - purple
 ];
 
 const FertilityBarChart: React.FC = () => {
@@ -115,7 +105,7 @@ const FertilityBarChart: React.FC = () => {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <CircularProgress />
+        <CircularProgress color="primary" />
       </Box>
     );
   }
@@ -152,7 +142,7 @@ const FertilityBarChart: React.FC = () => {
   
   return (
     <Paper 
-      elevation={3} 
+      elevation={1} 
       sx={{ 
         p: { xs: 1.5, sm: 2, md: 3 }, 
         m: { xs: 1, sm: 2 },
@@ -168,7 +158,7 @@ const FertilityBarChart: React.FC = () => {
         mb: 2,
         gap: 2
       }}>
-        <Typography variant="h6" sx={{ flexShrink: 0 }}>
+        <Typography variant="h4" sx={{ flexShrink: 0 }}>
           Fertility Rates by Education Level
         </Typography>
         
@@ -271,6 +261,9 @@ const FertilityBarChart: React.FC = () => {
             // Skip if we don't have data for this education group
             if (!item) return null;
             
+            // Get color from our design system
+            const educationColor = getEducationColor(educGroup);
+            
             return (
               <Box
                 key={educGroup}
@@ -347,25 +340,25 @@ const FertilityBarChart: React.FC = () => {
                     arrow
                     placement="top"
                   >
-                    <Fade in={true} timeout={700}>
+                    <Fade in={true} timeout={chartStyles.animation.standard}>
                       <Box
                         sx={{
                           width: barWidth,
                           height: `${item.fertility_rate ? (item.fertility_rate / maxRate) * 100 : 0}%`,
-                          bgcolor: EDUCATION_COLORS[index],
+                          bgcolor: educationColor,
                           borderTopLeftRadius: 4,
                           borderTopRightRadius: 4,
                           position: 'relative',
                           '&:hover': {
                             opacity: 0.9,
                             transform: 'scale(1.02)',
-                            transition: 'transform 0.2s ease-in-out'
+                            transition: `transform ${chartStyles.animation.short}ms ease-in-out`
                           },
                           display: 'flex',
                           justifyContent: 'center',
                           alignItems: 'flex-start',
                           pt: 1,
-                          transition: 'height 0.5s ease-out',
+                          transition: `height ${chartStyles.animation.standard}ms ease-out`,
                           mr: showComparison ? 0 : 'auto',
                           ml: showComparison ? 0 : 'auto'
                         }}
@@ -407,34 +400,33 @@ const FertilityBarChart: React.FC = () => {
                       arrow
                       placement="top"
                     >
-                      <Fade in={true} timeout={900}>
+                      <Fade in={true} timeout={chartStyles.animation.standard}>
                         <Box
                           sx={{
                             width: barWidth,
                             height: `${comparisonItem.fertility_rate ? (comparisonItem.fertility_rate / maxRate) * 100 : 0}%`,
-                            bgcolor: 'transparent',
-                            border: `2px dashed ${EDUCATION_COLORS[index]}`,
+                            bgcolor: `${educationColor}99`, // Add transparency to comparison bar
                             borderTopLeftRadius: 4,
                             borderTopRightRadius: 4,
                             position: 'relative',
+                            opacity: 0.8,
                             '&:hover': {
                               opacity: 0.9,
                               transform: 'scale(1.02)',
-                              transition: 'transform 0.2s ease-in-out'
+                              transition: `transform ${chartStyles.animation.short}ms ease-in-out`
                             },
                             display: 'flex',
                             justifyContent: 'center',
                             alignItems: 'flex-start',
                             pt: 1,
-                            transition: 'height 0.5s ease-out',
-                            mr: showComparison ? 0 : 'auto',
-                            ml: showComparison ? 0 : 'auto'
+                            transition: `height ${chartStyles.animation.standard}ms ease-out`,
+                            border: `1px dashed ${educationColor}`,
                           }}
                         >
                           <Typography
                             variant="body2"
                             sx={{
-                              color: EDUCATION_COLORS[index],
+                              color: 'white',
                               fontWeight: 'bold',
                               fontSize: { xs: '0.6rem', sm: '0.7rem', md: '0.75rem' }
                             }}
@@ -452,43 +444,78 @@ const FertilityBarChart: React.FC = () => {
         </Box>
       </Box>
       
+      {/* Axis and labels */}
       <Box sx={{ 
-        mt: 3,
+        mt: 1, 
         display: 'flex', 
-        flexDirection: isMobile ? 'column' : 'row',
-        alignItems: 'center', 
         justifyContent: 'center',
-        gap: 1,
-        pb: 1
+        px: 3,
+        alignItems: 'center',
       }}>
-        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          Births per 1,000 women aged 15-50, nationwide
+        <Typography 
+          variant="body2" 
+          sx={{ 
+            textAlign: 'center',
+            fontSize: { xs: '0.7rem', sm: '0.8rem' },
+            color: 'text.secondary'
+          }}
+        >
+          Births per 1,000 women aged 15-50
         </Typography>
         
         {showComparison && comparisonYear && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            ml: 2,
+            gap: 1,
+            flexWrap: 'wrap',
+            justifyContent: 'center'
+          }}>
             <Box sx={{ 
-              width: 16, 
-              height: 16, 
-              bgcolor: theme.palette.primary.main,
-              borderRadius: 0.5
-            }} />
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              {selectedYear}
-            </Typography>
+              display: 'flex', 
+              alignItems: 'center',
+              mr: 1
+            }}>
+              <Box sx={{ 
+                width: 12, 
+                height: 12, 
+                bgcolor: theme.palette.primary.main,
+                mr: 0.5 
+              }} />
+              <Typography variant="caption">{selectedYear}</Typography>
+            </Box>
             
             <Box sx={{ 
-              width: 16, 
-              height: 16, 
-              border: `2px dashed ${theme.palette.primary.main}`,
-              borderRadius: 0.5
-            }} />
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              {comparisonYear}
-            </Typography>
+              display: 'flex', 
+              alignItems: 'center' 
+            }}>
+              <Box sx={{ 
+                width: 12, 
+                height: 12, 
+                bgcolor: `${theme.palette.primary.main}99`,
+                border: `1px dashed ${theme.palette.primary.main}`,
+                mr: 0.5 
+              }} />
+              <Typography variant="caption">{comparisonYear}</Typography>
+            </Box>
           </Box>
         )}
       </Box>
+      
+      {/* Accessibility note */}
+      <Typography 
+        variant="caption" 
+        sx={{ 
+          display: 'block', 
+          textAlign: 'center', 
+          mt: 2,
+          color: 'text.secondary',
+          fontSize: '0.65rem'
+        }}
+      >
+        * Chart shows fertility rates (births per 1,000 women aged 15-50) by education level.
+      </Typography>
     </Paper>
   );
 };
