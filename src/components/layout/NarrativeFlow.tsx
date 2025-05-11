@@ -6,7 +6,7 @@ import { ScrollProvider } from '@/contexts/ScrollContext';
 import NarrativeNavigation from './NarrativeNavigation';
 import MobileNavigation from './MobileNavigation';
 import NarrativeSection from '../common/NarrativeSection';
-import { FertilityBarChart, FertilityLineChart, FertilityMapChart, FertilityMilestonesChart } from '@/components/charts';
+import { FertilityBarChart, FertilityLineChart, FertilityMapChart, FertilityMilestonesChart, FertilityPandemicChart } from '@/components/charts';
 
 // Define the sections for our narrative
 const SECTIONS = [
@@ -117,9 +117,7 @@ const NarrativeFlow: React.FC = () => {
         <NarrativeSection
           id="pandemic-effects"
           title="Education's Role During Crisis"
-          visualization={<Box sx={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <p>Pandemic effects visualization to be implemented</p>
-          </Box>}
+          visualization={<FertilityPandemicChart showTitle={false} embedded={true} />}
         >
           <Box>
             <p>The COVID-19 pandemic created an unprecedented global crisis that affected fertility decisions across all demographic groups. How did education level influence resilience during this period?</p>
