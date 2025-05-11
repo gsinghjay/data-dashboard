@@ -25,6 +25,9 @@ import { fetchNationalTrends } from '@/utils/api';
 import { getEducationColor, getOrderedEducationGroups, chartStyles } from '@/utils/chartHelpers';
 import * as d3 from 'd3';
 
+// Add declaration for d3 module
+// declare module 'd3';
+
 interface NationalTrendData {
   year: number;
   education_group: string;
@@ -49,6 +52,17 @@ interface FertilityLineChartProps {
   embedded?: boolean;
 }
 
+// Interface for tooltip data
+interface TooltipData {
+  education_group: string;
+  year: number;
+  fertility_rate: number;
+  total_births: number;
+  total_women: number;
+  x: number;
+  y: number;
+}
+
 const FertilityLineChart: React.FC<FertilityLineChartProps> = ({ 
   showTitle = true,
   embedded = false 
@@ -57,9 +71,13 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<NationalTrendData[]>([]);
   const [selectedEducationGroups, setSelectedEducationGroups] = useState<string[]>(DEFAULT_SELECTED_GROUPS);
+  const [tooltipData, setTooltipData] = useState<TooltipData | null>(null);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
   const { state } = useData();
   const chartRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const legendRef = useRef<HTMLDivElement>(null);
+  const tooltipRef = useRef<HTMLDivElement | null>(null);
 
   // Theme and responsive design
   const theme = useTheme();
@@ -110,6 +128,82 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
     }
   };
 
+  // Create legend component to display above the chart
+  const renderLegend = () => {
+    if (!selectedEducationGroups.length) return null;
+    
+    return (
+      <Box 
+        ref={legendRef}
+        sx={{ 
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 2,
+          mt: 1,
+          mb: 2,
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Typography 
+          variant="subtitle2" 
+          sx={{ 
+            fontSize: '0.75rem',
+            fontWeight: 'bold',
+            color: 'text.secondary',
+            mr: 1
+          }}
+        >
+          Legend:
+        </Typography>
+        {selectedEducationGroups.map(group => (
+          <Box 
+            key={group} 
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center',
+              gap: 0.5,
+              px: 1,
+              py: 0.5,
+              borderRadius: 1,
+              bgcolor: 'rgba(255, 255, 255, 0.9)',
+              border: `1px solid ${theme.palette.divider}`,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+            }}
+          >
+            <Box 
+              sx={{ 
+                width: 12, 
+                height: 12, 
+                borderRadius: '2px',
+                bgcolor: getEducationColor(group) 
+              }} 
+            />
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                fontSize: '0.75rem',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {isMobile || isMedium ? 
+                group
+                  .replace('Less than High School', 'Less than HS')
+                  .replace('High School Diploma', 'HS Diploma')
+                  .replace('Associate\'s Degree', 'Associate\'s')
+                  .replace('Bachelor\'s Degree', 'Bachelor\'s')
+                  .replace('Master\'s Degree', 'Master\'s')
+                  .replace('Professional/Doctorate Degree', 'Prof/Doctorate')
+                : 
+                group
+              }
+            </Typography>
+          </Box>
+        ))}
+      </Box>
+    );
+  };
+
   // Draw chart with D3
   useEffect(() => {
     if (loading || error || !data.length || !chartRef.current) return;
@@ -132,7 +226,7 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
     const chartHeight = isMobile ? 300 : 400;
     const margin = {
       top: chartStyles.margin.top,
-      right: chartStyles.margin.right + 80, // Increased space for legend
+      right: chartStyles.margin.right, // Removed extra space for legend
       bottom: chartStyles.margin.bottom,
       left: chartStyles.margin.left + 15 // Increased left margin for Y-axis label
     };
@@ -176,7 +270,7 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
     // Add X axis
     svg.append('g')
       .attr('transform', `translate(0, ${height})`)
-      .call(d3.axisBottom(x).ticks(isMobile ? 5 : 8).tickFormat(d => d.toString()))
+      .call(d3.axisBottom(x).ticks(isMobile ? 5 : 8).tickFormat((d: any) => d.toString()))
       .attr('aria-label', 'Years')
       .selectAll("text")
       .style('font-size', chartStyles.fontSize.axisLabel)
@@ -230,40 +324,9 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
 
     // Define line generator
     const line = d3.line<NationalTrendData>()
-      .x(d => x(d.year))
-      .y(d => y(d.fertility_rate))
+      .x((d: any) => x(d.year))
+      .y((d: any) => y(d.fertility_rate))
       .curve(d3.curveMonotoneX); // Smooth curve
-
-    // Create a tooltip
-    const tooltip = d3.select(chartRef.current)
-      .append('div')
-      .attr('class', 'tooltip')
-      .style('opacity', 0)
-      .style('position', 'absolute')
-      .style('background-color', chartStyles.ui.tooltip)
-      .style('color', 'white')
-      .style('padding', '8px')
-      .style('border-radius', '4px')
-      .style('font-size', chartStyles.fontSize.tooltip)
-      .style('pointer-events', 'none')
-      .style('z-index', 1000)
-      .style('max-width', '200px');
-
-    // Helper function to position tooltip
-    const positionTooltip = (event: MouseEvent) => {
-      const bodyWidth = document.body.clientWidth;
-      const tooltipWidth = 200; // Approximate width of tooltip
-      
-      // Keep tooltip within window bounds
-      const xPosition = event.pageX + tooltipWidth + 10 > bodyWidth 
-        ? event.pageX - tooltipWidth - 10 
-        : event.pageX + 10;
-      
-      return {
-        left: `${xPosition}px`,
-        top: `${event.pageY - 28}px`
-      };
-    };
 
     // Draw lines for each education group
     groupedData.forEach(group => {
@@ -296,8 +359,8 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
         .enter()
         .append('circle')
         .attr('class', `dot-${sanitizedClassName}`)
-        .attr('cx', d => x(d.year))
-        .attr('cy', d => y(d.fertility_rate))
+        .attr('cx', (d: any) => x(d.year))
+        .attr('cy', (d: any) => y(d.fertility_rate))
         .attr('r', chartStyles.size.dotRadius)
         .attr('fill', color)
         .style('opacity', 0)
@@ -311,111 +374,52 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
         .enter()
         .append('circle')
         .attr('class', `hover-${sanitizedClassName}`)
-        .attr('cx', d => x(d.year))
-        .attr('cy', d => y(d.fertility_rate))
-        .attr('r', chartStyles.size.tooltipRadius / 2) // Large enough for touch targets
+        .attr('cx', (d: any) => x(d.year))
+        .attr('cy', (d: any) => y(d.fertility_rate))
+        .attr('r', chartStyles.size.tooltipRadius) // Large enough for touch targets
         .attr('fill', 'transparent')
         .style('cursor', 'pointer')
-        .on('mouseover', function(event, d) {
+        .on('mouseover', function(this: SVGCircleElement, event: any, d: any) {
+          // Handle tooltip display
+          const svgElement = chartRef.current?.querySelector('svg');
+          const svgRect = svgElement?.getBoundingClientRect();
+          
+          if (svgRect) {
+            // Position relative to the dot in chart coordinates
+            const dotX = x(d.year);
+            const dotY = y(d.fertility_rate);
+            
+            // Update tooltip state
+            setTooltipData({
+              education_group: group.education_group,
+              year: d.year,
+              fertility_rate: d.fertility_rate,
+              total_births: d.total_births,
+              total_women: d.total_women,
+              x: dotX,
+              y: dotY
+            });
+            setTooltipOpen(true);
+          }
+          
+          // Highlight the dot
           d3.select(this.parentNode)
             .selectAll(`.dot-${sanitizedClassName}`)
-            .filter(point => (point as any).year === d.year)
+            .filter((point: any) => point.year === d.year)
             .attr('r', chartStyles.size.dotRadius * 1.5)
             .attr('stroke', 'white')
             .attr('stroke-width', 2);
-
-          tooltip.transition()
-            .duration(200)
-            .style('opacity', 0.9);
-            
-          tooltip.html(`
-            <div style="font-weight: bold">${group.education_group}</div>
-            <div>Year: ${d.year}</div>
-            <div>Rate: ${d.fertility_rate.toFixed(1)} per 1,000 women</div>
-            <div>Births: ${d.total_births.toLocaleString()}</div>
-            <div>Women: ${d.total_women.toLocaleString()}</div>
-          `)
-            .style(positionTooltip(event));
         })
-        .on('mouseout', function() {
+        .on('mouseout', function(this: SVGCircleElement) {
+          // Hide tooltip
+          setTooltipOpen(false);
+          
+          // Reset dot style
           d3.select(this.parentNode)
             .selectAll(`.dot-${sanitizedClassName}`)
             .attr('r', chartStyles.size.dotRadius)
             .attr('stroke', 'none');
-
-          tooltip.transition()
-            .duration(500)
-            .style('opacity', 0);
         });
-    });
-
-    // Adjust legend spacing based on item count
-    const legendSpacing = Math.min(25, Math.max(15, height / (groupedData.length + 1)));
-    
-    // Use smaller spacing for many groups
-    const effectiveSpacing = groupedData.length > 5 ? 
-      Math.min(legendSpacing, Math.floor((height - 30) / groupedData.length)) : 
-      legendSpacing;
-      
-    // Add a legend with background
-    // First add a background rectangle for the legend
-    const legendPadding = { top: 8, right: 8, bottom: 8, left: 5 };
-    const legendWidth = 160; // Approximate width of legend
-    const legendHeight = (groupedData.length * effectiveSpacing) + legendPadding.top + legendPadding.bottom + 20; // Add space for title
-    
-    // Add background for legend
-    svg.append('rect')
-      .attr('x', width + legendPadding.left)
-      .attr('y', legendPadding.top)
-      .attr('width', legendWidth)
-      .attr('height', legendHeight)
-      .attr('fill', 'rgba(255, 255, 255, 0.9)')
-      .attr('rx', 4)
-      .attr('ry', 4)
-      .style('stroke', theme.palette.divider)
-      .style('stroke-width', '1px');
-
-    // Add a legend
-    const legend = svg.append('g')
-      .attr('class', 'legend')
-      .attr('transform', `translate(${width + 15}, ${legendPadding.top + 10})`);
-    
-    // Create a title for the legend
-    legend.append('text')
-      .attr('x', 0)
-      .attr('y', -5)
-      .text('Education Level')
-      .style('font-size', '0.75rem')
-      .style('font-weight', 'bold')
-      .style('font-family', "'Inter', sans-serif");
-       
-    groupedData.forEach((group, i) => {
-      const legendItem = legend.append('g')
-        .attr('transform', `translate(0, ${15 + i * effectiveSpacing})`);
-
-      legendItem.append('rect')
-        .attr('width', 12)
-        .attr('height', 12)
-        .attr('fill', getEducationColor(group.education_group))
-        .attr('rx', 2) // Slightly rounded corners
-        .attr('ry', 2);
-
-      legendItem.append('text')
-        .attr('x', 18)
-        .attr('y', 9)
-        .text(isMobile ? 
-          group.education_group
-            .replace('Less than High School', 'Less than HS')
-            .replace('High School Diploma', 'HS Diploma')
-            .replace('Associate\'s Degree', 'Associate\'s')
-            .replace('Bachelor\'s Degree', 'Bachelor\'s')
-            .replace('Master\'s Degree', 'Master\'s')
-            .replace('Professional/Doctorate Degree', 'Prof/Doctorate')
-          : 
-          group.education_group
-        )
-        .style('font-size', '0.7rem')
-        .style('font-family', "'Inter', sans-serif");
     });
 
   }, [data, loading, error, selectedEducationGroups, isMobile, isMedium, theme.palette.text.secondary]);
@@ -520,6 +524,9 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
         </Box>
       </Box>
       
+      {/* Render the legend here before the chart */}
+      {renderLegend()}
+      
       <Box 
         ref={chartRef}
         sx={{ 
@@ -530,6 +537,96 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
           mb: 2,
         }}
       />
+      
+      {/* Material UI Tooltip */}
+      <Tooltip
+        open={tooltipOpen}
+        title={
+          tooltipData ? (
+            <Box>
+              <Typography variant="subtitle2">{tooltipData.education_group}</Typography>
+              <Typography variant="body2">
+                Rate: {tooltipData.fertility_rate.toFixed(1)} per 1,000 women
+              </Typography>
+              <Typography variant="body2">
+                Births: {tooltipData.total_births.toLocaleString()}
+              </Typography>
+              <Typography variant="body2">
+                Women: {tooltipData.total_women.toLocaleString()}
+              </Typography>
+              <Typography variant="caption">
+                Year: {tooltipData.year}
+              </Typography>
+            </Box>
+          ) : ""
+        }
+        arrow
+        placement="top"
+        PopperProps={{
+          style: { 
+            pointerEvents: 'none',
+          },
+          anchorEl: {
+            getBoundingClientRect: () => {
+              if (!chartRef.current) {
+                return new DOMRect(0, 0, 0, 0);
+              }
+              
+              // Get chart element's position
+              const chartRect = chartRef.current.getBoundingClientRect();
+              
+              // Calculate position relative to chart
+              return new DOMRect(
+                chartRect.left + (tooltipData?.x || 0),
+                chartRect.top + (tooltipData?.y || 0),
+                0, 
+                0
+              );
+            }
+          },
+          container: chartRef.current,
+          disablePortal: false, // Allow it to overflow chart box
+          modifiers: [
+            {
+              name: 'preventOverflow',
+              options: {
+                boundary: 'clippingParents',
+                altAxis: true,
+                padding: 8,
+              },
+            }
+          ]
+        }}
+        componentsProps={{
+          tooltip: {
+            sx: {
+              bgcolor: 'background.paper',
+              color: 'text.primary',
+              boxShadow: theme.shadows[2],
+              fontSize: '0.75rem',
+              p: 1,
+              border: `1px solid ${theme.palette.divider}`,
+              maxWidth: 'none',
+              '& .MuiTooltip-arrow': {
+                color: 'background.paper',
+              }
+            }
+          }
+        }}
+      >
+        <Box 
+          ref={tooltipRef}
+          sx={{ 
+            position: 'absolute', 
+            top: 0, 
+            left: 0, 
+            width: 1, 
+            height: 1, 
+            pointerEvents: 'none',
+            opacity: 0
+          }} 
+        />
+      </Tooltip>
       
       {/* Axis and labels */}
       <Box sx={{ 
