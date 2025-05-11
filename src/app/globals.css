@@ -1,3 +1,6 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Source+Serif+Pro:wght@400;600&display=swap');
+
 :root {
   --max-width: 1100px;
   --border-radius: 12px;
@@ -7,6 +10,23 @@
 
   --foreground-rgb: 0, 0, 0;
   --background-rgb: 255, 255, 255;
+
+  /* Custom theme colors */
+  --less-than-high-school: #B0BEC5;
+  --high-school-diploma: #78909C;
+  --some-college: #64B5F6;
+  --associates-degree: #42A5F5;
+  --bachelors-degree: #2962FF;
+  --masters-degree: #5E35B1;
+  --professional-doctorate: #311B92;
+
+  /* Primary and secondary colors */
+  --primary-color: #2962FF;
+  --secondary-color: #5E35B1;
+
+  /* Text colors */
+  --text-primary: #263238;
+  --text-secondary: #455A64;
 
   --primary-glow: conic-gradient(
     from 180deg at 50% 50%,
@@ -81,13 +101,25 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
-  background-color: #ffffff;
-  color: #212121;
+  background-color: #F8F9FA;
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
+  color: var(--text-primary);
+  background: #F8F9FA;
+}
+
+/* Override for headings to use Source Serif Pro */
+h1, h2, h3, h4 {
+  font-family: 'Source Serif Pro', serif;
+  color: var(--text-primary);
+}
+
+h5, h6 {
+  font-family: 'Inter', sans-serif;
+  color: var(--text-primary);
 }
 
 a {
@@ -95,8 +127,26 @@ a {
   text-decoration: none;
 }
 
+/* Override dark mode preferences to ensure light mode */
 @media (prefers-color-scheme: dark) {
   html {
-    color-scheme: dark;
+    color-scheme: light;
+  }
+  body {
+    background-color: #F8F9FA;
+    color: var(--text-primary);
   }
 }
+
+/* Education color classes for direct use in HTML */
+.edu-less-than-high-school { background-color: var(--less-than-high-school); }
+.edu-high-school-diploma { background-color: var(--high-school-diploma); }
+.edu-some-college { background-color: var(--some-college); }
+.edu-associates-degree { background-color: var(--associates-degree); }
+.edu-bachelors-degree { background-color: var(--bachelors-degree); }
+.edu-masters-degree { background-color: var(--masters-degree); }
+.edu-professional-doctorate { background-color: var(--professional-doctorate); }
+
+/* Text colors for different backgrounds */
+.text-on-light { color: #000000; }
+.text-on-dark { color: #FFFFFF; }
