@@ -4,12 +4,32 @@ import { useEffect, useState } from 'react';
 import { Button, Container, Typography, Box, Paper, CircularProgress } from '@mui/material';
 import { fetchEducationGroups, fetchStates, fetchSummaryStats } from '@/utils/api';
 
+// Define proper types for the data
+interface EducationGroup {
+  id: number;
+  name: string;
+  schl_codes: string;
+  display_order: number;
+}
+
+interface State {
+  code: string;
+  name: string;
+}
+
+interface SummaryStats {
+  yearRange?: { minYear: number; maxYear: number };
+  totalRecords?: { count: number };
+  educationGroupCount?: { count: number };
+  stateCount?: { count: number };
+}
+
 export default function ApiTestPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [educationGroups, setEducationGroups] = useState([]);
-  const [states, setStates] = useState([]);
-  const [summaryStats, setSummaryStats] = useState<any>(null);
+  const [educationGroups, setEducationGroups] = useState<EducationGroup[]>([]);
+  const [states, setStates] = useState<State[]>([]);
+  const [summaryStats, setSummaryStats] = useState<SummaryStats | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -83,7 +103,7 @@ export default function ApiTestPage() {
           <Paper sx={{ p: 3, mb: 3 }}>
             <Typography variant="h6" gutterBottom>Education Groups ({educationGroups.length})</Typography>
             <Box component="ul">
-              {educationGroups.map((group: any) => (
+              {educationGroups.map((group: EducationGroup) => (
                 <li key={group.id}>
                   {group.name} (SCHL codes: {group.schl_codes})
                 </li>
@@ -100,7 +120,7 @@ export default function ApiTestPage() {
               gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
               gap: 1
             }}>
-              {states.map((state: any) => (
+              {states.map((state: State) => (
                 <li key={state.code}>
                   {state.name} ({state.code})
                 </li>
