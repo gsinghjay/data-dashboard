@@ -1,6 +1,48 @@
 # CHANGELOG
 
 
+## v1.17.0 (2025-05-11)
+
+### Bug Fixes
+
+- Add proper TypeScript interfaces to API test page
+  ([`0f9a9c9`](https://github.com/gsinghjay/data-dashboard/commit/0f9a9c928ab7f748274067b8c4b72b7b0d59262b))
+
+- Convert ConclusionSummary to proper React component
+  ([`e1f3a7c`](https://github.com/gsinghjay/data-dashboard/commit/e1f3a7ca7c282c9d54210a9cdcb3945ff941aa94))
+
+- Correct topojson typing issues in map chart
+  ([`0358e64`](https://github.com/gsinghjay/data-dashboard/commit/0358e644e3e267dd9ce289304af205c606dacbd0))
+
+- Remove deprecated appDir config option
+  ([`b9a6005`](https://github.com/gsinghjay/data-dashboard/commit/b9a6005ef0f9f1bf52c7841a41f45defe1e952f3))
+
+- Resolve SVG reference TypeScript errors in line chart
+  ([`b6e8664`](https://github.com/gsinghjay/data-dashboard/commit/b6e8664067632154bf2ad066230b25e1a662bb0f))
+
+- Update SVG element references for TypeScript compatibility
+  ([`930afc5`](https://github.com/gsinghjay/data-dashboard/commit/930afc5c4c7b5a4d7ac6ea7bb7d2aa722cb741cd))
+
+### Chores
+
+- Add vercelignore file to exclude large data directories
+  ([`28e94c3`](https://github.com/gsinghjay/data-dashboard/commit/28e94c3dc45f4ad36a3dbc53b9e8900917e985ec))
+
+- Update dependencies and TypeScript configurations
+  ([`28107c5`](https://github.com/gsinghjay/data-dashboard/commit/28107c51cffd28bc698a65b283e10af3823aa0da))
+
+- Update gitignore patterns
+  ([`de41442`](https://github.com/gsinghjay/data-dashboard/commit/de41442c3a96768553de8e0e4b992c5130300cef))
+
+### Features
+
+- Add concise conclusion to fertility education summary
+  ([`d9c453f`](https://github.com/gsinghjay/data-dashboard/commit/d9c453f7c347443c792337b0407e2ed45bbbec11))
+
+- Create conclusion summary component
+  ([`3be10e8`](https://github.com/gsinghjay/data-dashboard/commit/3be10e8a076535aa5977438fdc7ffdb74b5fbc21))
+
+
 ## v1.16.0 (2025-05-11)
 
 ### Features
