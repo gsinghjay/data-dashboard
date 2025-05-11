@@ -160,14 +160,22 @@ export function getStateComparison(options: {
   try {
     const db = getDb();
     
-    let query = 'SELECT * FROM state_comparison WHERE 1=1';
+    // Instead of using the state_comparison view which only has the most recent year,
+    // query the fertility_rates table directly to support filtering by year
+    let query = `
+      SELECT year, state_code, state_name, education_group, women_count, births, fertility_rate 
+      FROM fertility_rates 
+      WHERE 1=1
+    `;
     const params: any[] = [];
     
-    // Default to the most recent year if not specified
-    const defaultYear = 2023;
-    const year = options.year || defaultYear;
-    query += ' AND year = ?';
-    params.push(year);
+    // Add year filter if provided, otherwise use the most recent year
+    if (options.year) {
+      query += ' AND year = ?';
+      params.push(options.year);
+    } else {
+      query += ' AND year = (SELECT MAX(year) FROM fertility_rates)';
+    }
     
     if (options.education_group) {
       if (Array.isArray(options.education_group)) {
