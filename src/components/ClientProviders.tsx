@@ -6,12 +6,16 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { StyledEngineProvider } from '@mui/material/styles';
 import theme from '@/utils/theme';
 import { DataProvider } from '@/contexts/DataContext';
+import useSuppressRefWarnings from '@/hooks/useSuppressRefWarnings';
 
 interface ClientProvidersProps {
   children: ReactNode;
 }
 
 const ClientProviders: React.FC<ClientProvidersProps> = ({ children }) => {
+  // Suppress React 19 ref warnings
+  useSuppressRefWarnings();
+  
   // Ensure the body has the correct background color on mount
   // and load fonts explicitly
   useEffect(() => {
