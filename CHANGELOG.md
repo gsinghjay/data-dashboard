@@ -1,6 +1,65 @@
 # CHANGELOG
 
 
+## v1.7.0 (2025-05-11)
+
+### Bug Fixes
+
+- Improve FertilityBarChart layout and comparison mode
+  ([`e364690`](https://github.com/gsinghjay/data-dashboard/commit/e364690fa66d10ebb55c4bc523c1226fa5896acc))
+
+### Chores
+
+- Add better-sqlite3 and type dependencies
+  ([`856a78d`](https://github.com/gsinghjay/data-dashboard/commit/856a78df82211018fa41f25af9e4509d07600079))
+
+### Features
+
+- Add API endpoint for education comparison data
+  ([`6a45351`](https://github.com/gsinghjay/data-dashboard/commit/6a45351ebe2f562ed902002ec625c5046499231f))
+
+- Add API endpoint for education groups
+  ([`d85e159`](https://github.com/gsinghjay/data-dashboard/commit/d85e159ee35a50b5b17edbca8e5dffe26afa590b))
+
+- Add API endpoint for fertility rates with filtering
+  ([`dbf10a6`](https://github.com/gsinghjay/data-dashboard/commit/dbf10a6b1d93eeb4d3be08fc76780bc214d8cf39))
+
+- Add API endpoint for national trends data
+  ([`d4b70ff`](https://github.com/gsinghjay/data-dashboard/commit/d4b70ffaee22be1a26c8371a12c6587efa76be75))
+
+- Add API endpoint for state comparison data
+  ([`aba0c09`](https://github.com/gsinghjay/data-dashboard/commit/aba0c091a8906f743f5a8b6c6d4a5e0c6e1ad852))
+
+- Add API endpoint for states data
+  ([`4ce7716`](https://github.com/gsinghjay/data-dashboard/commit/4ce7716ff82261622046cbad1dfa6767717ab817))
+
+- Add API endpoint for summary statistics
+  ([`9458162`](https://github.com/gsinghjay/data-dashboard/commit/945816200e6d38ff5103ce6e02252ffa22bb2f3a))
+
+- Create API client utilities for data fetching
+  ([`df30640`](https://github.com/gsinghjay/data-dashboard/commit/df30640109f3acbc0ab69847abc2a2492f8b2c7d))
+
+- Create API test page for endpoint verification
+  ([`cbecaf6`](https://github.com/gsinghjay/data-dashboard/commit/cbecaf6ecce51040ee61ecf6cba4722e3a1226f4))
+
+- Implement bar chart for fertility rates by education level
+  ([`0fd134e`](https://github.com/gsinghjay/data-dashboard/commit/0fd134e68ab001e4d093949d205c6efe58644ca9))
+
+- Implement custom hook for fertility data management
+  ([`3ee4131`](https://github.com/gsinghjay/data-dashboard/commit/3ee4131e3118b171055089004f9fc989b1875acc))
+
+- Implement SQLite database access utility
+  ([`d867fef`](https://github.com/gsinghjay/data-dashboard/commit/d867fef805bd6e92a00d1a5b576777affc92c69c))
+
+- Integrate fertility bar chart on home page
+  ([`09e1547`](https://github.com/gsinghjay/data-dashboard/commit/09e1547c7f81bfc49b57cc98138e220e9abd4443))
+
+### Refactoring
+
+- Update DataContext to use new data fetching hook
+  ([`504b98d`](https://github.com/gsinghjay/data-dashboard/commit/504b98dc12898366b7b564ce87aff5c916a901d6))
+
+
 ## v1.6.0 (2025-05-11)
 
 ### Bug Fixes
