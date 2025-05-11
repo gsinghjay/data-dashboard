@@ -163,11 +163,11 @@ const FertilityMapChart: React.FC<FertilityMapChartProps> = ({
 
     // Set dimensions
     const chartWidth = chartRef.current.clientWidth;
-    const chartHeight = isMobile ? 300 : 500;
+    const chartHeight = isMobile ? 400 : 700;
     const margin = {
       top: chartStyles.margin.top,
       right: chartStyles.margin.right,
-      bottom: chartStyles.margin.bottom,
+      bottom: chartStyles.margin.bottom + 50,
       left: chartStyles.margin.left
     };
     const width = chartWidth - margin.left - margin.right;
@@ -386,7 +386,7 @@ const FertilityMapChart: React.FC<FertilityMapChartProps> = ({
     <>
       {showTitle && (
         <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 2 }}>
-          Fertility Rates by State ({selectedYear})
+          Geographic Fertility Rate Patterns
         </Typography>
       )}
       
@@ -433,8 +433,10 @@ const FertilityMapChart: React.FC<FertilityMapChartProps> = ({
         ref={chartRef} 
         sx={{ 
           width: '100%', 
-          height: isMobile ? 300 : 500,
-          position: 'relative' 
+          height: isMobile ? 400 : 700,
+          mb: 4,
+          position: 'relative',
+          overflow: 'visible'
         }}
         onMouseLeave={handleMouseLeave}
       >
@@ -445,23 +447,23 @@ const FertilityMapChart: React.FC<FertilityMapChartProps> = ({
                 position: 'absolute',
                 top: tooltipData.y - 30,
                 left: tooltipData.x + 10,
-                backgroundColor: 'rgba(38, 50, 56, 0.9)',
+                backgroundColor: 'rgba(38, 50, 56, 0.95)',
                 color: 'white',
                 padding: 1.5,
                 borderRadius: 1,
                 zIndex: 1500,
                 maxWidth: 220,
                 pointerEvents: 'none',
-                boxShadow: theme.shadows[2],
+                boxShadow: theme.shadows[3],
               }}
             >
-              <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 0.5 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 0.5, color: 'white' }}>
                 {tooltipData.stateName}
               </Typography>
-              <Typography variant="body2" sx={{ mb: 0.5 }}>
+              <Typography variant="body2" sx={{ mb: 0.5, color: 'white' }}>
                 {tooltipData.educationGroup || 'All Education Levels'}
               </Typography>
-              <Typography variant="body2">
+              <Typography variant="body2" sx={{ color: 'white' }}>
                 Fertility Rate: <strong>{tooltipData.fertilityRate.toFixed(1)}</strong>
               </Typography>
             </Box>
@@ -472,7 +474,15 @@ const FertilityMapChart: React.FC<FertilityMapChartProps> = ({
   );
   
   return embedded ? ChartContent : (
-    <Paper elevation={1} sx={{ p: 3, borderRadius: 2 }}>
+    <Paper 
+      elevation={1} 
+      sx={{ 
+        p: 3, 
+        borderRadius: 2,
+        mb: 4,
+        overflow: 'visible'
+      }}
+    >
       {ChartContent}
     </Paper>
   );
