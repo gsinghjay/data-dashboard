@@ -245,7 +245,9 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
-    svgRef.current = svg.node()?.parentElement as SVGSVGElement;
+    // Fix the type casting for SVG element
+    const parentElement = svg.node()?.parentElement;
+    svgRef.current = parentElement instanceof SVGSVGElement ? parentElement : null;
 
     // Find min and max years
     const years = availableYears;
@@ -425,22 +427,28 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
           }
           
           // Highlight the dot
-          d3.select(this.parentNode)
-            .selectAll(`.dot-${sanitizedClassName}`)
-            .filter((point: any) => point.year === d.year)
-            .attr('r', chartStyles.size.dotRadius * 1.5)
-            .attr('stroke', 'white')
-            .attr('stroke-width', 2);
+          const parentNode = this.parentNode;
+          if (parentNode instanceof Element) {
+            d3.select(parentNode)
+              .selectAll(`.dot-${sanitizedClassName}`)
+              .filter((point: any) => point.year === d.year)
+              .attr('r', chartStyles.size.dotRadius * 1.5)
+              .attr('stroke', 'white')
+              .attr('stroke-width', 2);
+          }
         })
         .on('mouseout', function(this: SVGCircleElement) {
           // Hide tooltip
           setTooltipOpen(false);
           
           // Reset dot style
-          d3.select(this.parentNode)
-            .selectAll(`.dot-${sanitizedClassName}`)
-            .attr('r', chartStyles.size.dotRadius)
-            .attr('stroke', 'none');
+          const parentNode = this.parentNode;
+          if (parentNode instanceof Element) {
+            d3.select(parentNode)
+              .selectAll(`.dot-${sanitizedClassName}`)
+              .attr('r', chartStyles.size.dotRadius)
+              .attr('stroke', 'none');
+          }
         });
     });
 
