@@ -182,7 +182,9 @@ const FertilityPandemicChart: React.FC<FertilityPandemicChartProps> = ({
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
     
-    svgRef.current = svg.node()?.parentElement as SVGSVGElement;
+    // Fix the type casting for SVG element
+    const parentElement = svg.node()?.parentElement;
+    svgRef.current = parentElement instanceof SVGSVGElement ? parentElement : null;
     
     // Define x and y scales
     const x = d3.scaleBand()
