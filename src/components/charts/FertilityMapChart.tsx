@@ -185,7 +185,9 @@ const FertilityMapChart: React.FC<FertilityMapChartProps> = ({
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
-    svgRef.current = svg.node()?.parentElement as SVGSVGElement;
+    // Fix the type casting for SVG element
+    const parentElement = svg.node()?.parentElement;
+    svgRef.current = parentElement instanceof SVGSVGElement ? parentElement : null;
 
     // Define the projection
     const projection = d3.geoAlbersUsa()
@@ -205,7 +207,8 @@ const FertilityMapChart: React.FC<FertilityMapChartProps> = ({
         
         console.log('TopoJSON loaded successfully');
         // Extract states feature
-        const states = topojson.feature(us, us.objects.states).features;
+        const statesFeature = topojson.feature(us, us.objects.states);
+        const states = (statesFeature as any).features;
         console.log('First few states from TopoJSON:', states.slice(0, 3));
         
         // Create a map of state codes to data
