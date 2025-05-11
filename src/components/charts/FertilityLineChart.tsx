@@ -223,7 +223,7 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
 
     // Set dimensions
     const chartWidth = chartRef.current.clientWidth;
-    const chartHeight = isMobile ? 300 : 400;
+    const chartHeight = isMobile ? 350 : 500; // Increased height to give lines more vertical space
     const margin = {
       top: chartStyles.margin.top,
       right: chartStyles.margin.right, // Removed extra space for legend
@@ -252,21 +252,25 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
     const minYear = years[0];
     const maxYear = years[years.length - 1];
 
-    // Create X scale - using a point scale for even spacing
+    // Create X scale for data plotting and axis
     const xTickValues = isMobile 
-      ? [2008, 2012, 2016, 2020, 2023] // 5 values for mobile
-      : [2008, 2010, 2012, 2014, 2016, 2018, 2020, 2022, 2023]; // 9 values for desktop
+      ? [2008, 2010, 2012, 2014, 2016, 2018, 2020, 2022, 2023] // 9 values for mobile (reduced but still comprehensive)
+      : availableYears; // All years for desktop
     
-    // Use a band scale for equally spaced ticks
-    const xBand = d3.scaleBand()
-      .domain(xTickValues.map(d => d.toString()))
-      .range([0, width])
-      .padding(0.1);
-    
-    // And a regular scale for the actual data points
+    // Use a linear scale for accurate data positioning
     const x = d3.scaleLinear()
       .domain([minYear, maxYear])
       .range([0, width]);
+    
+    // Create a band scale for tick placement that matches the linear scale
+    const xBand = d3.scaleBand()
+      .domain(years.map(d => d.toString()))
+      .range([0, width]);
+    
+    // Filter tick values to only show the ones we want
+    const filteredTicks = (value: any) => {
+      return xTickValues.includes(parseInt(value));
+    };
 
     // Find min and max fertility rates
     const allRates = data.map(d => d.fertility_rate);
@@ -282,13 +286,17 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
     svg.append('g')
       .attr('transform', `translate(0, ${height})`)
       .call(
-        d3.axisBottom(xBand)
+        d3.axisBottom(x)
+          .tickValues(xTickValues)
           .tickFormat((d: any) => d)
       )
       .attr('aria-label', 'Years')
       .selectAll("text")
       .style('font-size', chartStyles.fontSize.axisLabel)
-      .style('font-family', "'Inter', sans-serif");
+      .style('font-family', "'Inter', sans-serif")
+      // Rotate labels slightly if not mobile to avoid overlapping when showing many years
+      .attr('transform', isMobile ? null : 'rotate(-15)')
+      .style('text-anchor', isMobile ? 'middle' : 'end');
 
     // Add Y axis
     svg.append('g')
@@ -314,7 +322,8 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
       .attr('class', 'grid x-grid')
       .attr('transform', `translate(0, ${height})`)
       .call(
-        d3.axisBottom(xBand)
+        d3.axisBottom(x)
+          .tickValues(xTickValues)
           .tickSize(-height)
           .tickFormat(() => '')
       )
@@ -497,7 +506,8 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
             display: 'flex',
             flexWrap: 'wrap',
             gap: 0.5,
-            mt: 1
+            mt: 1,
+            ml: 1.5 // Add left margin to align with the parent control
           }}>
             {EDUCATION_GROUPS.map((group) => (
               <FormControlLabel
@@ -543,7 +553,7 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
       <Box 
         ref={chartRef}
         sx={{ 
-          height: { xs: 300, sm: 350, md: 400 }, 
+          height: { xs: 350, sm: 400, md: 500 }, // Increased height to match chart dimensions
           width: '100%',
           position: 'relative',
           mt: 2,
@@ -552,10 +562,10 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
       />
       
       {/* Material UI Tooltip */}
-      <Tooltip
-        open={tooltipOpen}
-        title={
-          tooltipData ? (
+      {tooltipOpen && tooltipData && (
+        <Tooltip
+          open={tooltipOpen}
+          title={
             <Box>
               <Typography 
                 variant="subtitle2" 
@@ -579,59 +589,54 @@ const FertilityLineChart: React.FC<FertilityLineChartProps> = ({
                 Year: {tooltipData.year}
               </Typography>
             </Box>
-          ) : ""
-        }
-        arrow
-        placement="top"
-        PopperProps={{
-          style: { 
-            pointerEvents: 'none',
-          },
-          anchorEl: {
-            getBoundingClientRect: () => {
-              if (!chartRef.current) {
-                return new DOMRect(0, 0, 0, 0);
+          }
+          arrow
+          placement="top"
+          PopperProps={{
+            style: { 
+              pointerEvents: 'none',
+            },
+            anchorEl: {
+              getBoundingClientRect: () => {
+                // Get chart element's position and dimensions
+                const chartRect = chartRef.current?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
+                const margin = {
+                  left: chartStyles.margin.left + 15, // Match margin used in chart creation
+                  top: chartStyles.margin.top
+                };
+                
+                // Calculate position in viewport coordinates
+                // Add margin to align tooltip with actual data point position
+                return new DOMRect(
+                  chartRect.left + margin.left + (tooltipData.x || 0),
+                  chartRect.top + margin.top + (tooltipData.y || 0),
+                  0, 
+                  0
+                );
               }
-              
-              // Get chart element's position
-              const chartRect = chartRef.current.getBoundingClientRect();
-              
-              // Calculate position relative to chart
-              return new DOMRect(
-                chartRect.left + (tooltipData?.x || 0),
-                chartRect.top + (tooltipData?.y || 0),
-                0, 
-                0
-              );
-            }
-          },
-          container: chartRef.current,
-          disablePortal: false, // Allow it to overflow chart box
-          modifiers: [
-            {
-              name: 'preventOverflow',
-              options: {
-                boundary: 'clippingParents',
-                altAxis: true,
-                padding: 8,
+            },
+            disablePortal: true, // Keep tooltip within chart boundary
+            modifiers: [
+              {
+                name: 'offset',
+                options: {
+                  offset: [0, 3], // Smaller offset to position just above dot
+                },
               },
-            }
-          ]
-        }}
-      >
-        <Box 
-          ref={tooltipRef}
-          sx={{ 
-            position: 'absolute', 
-            top: 0, 
-            left: 0, 
-            width: 1, 
-            height: 1, 
-            pointerEvents: 'none',
-            opacity: 0
-          }} 
-        />
-      </Tooltip>
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                  altAxis: true,
+                  padding: 8,
+                },
+              }
+            ]
+          }}
+        >
+          <div style={{ position: 'absolute', top: 0, left: 0, width: 0, height: 0 }} />
+        </Tooltip>
+      )}
       
       {/* Axis and labels */}
       <Box sx={{ 
