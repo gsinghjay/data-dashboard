@@ -94,6 +94,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.12)',
+          borderRadius: 0  // Added to ensure all AppBars have square edges
         },
       },
     },
