@@ -9,6 +9,7 @@ import PaletteIcon from '@mui/icons-material/Palette';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useState } from 'react';
 import FertilityBarChart from '@/components/charts/FertilityBarChart';
+import FertilityLineChart from '@/components/charts/FertilityLineChart';
 import Link from 'next/link';
 import { educationColors } from '@/utils/theme';
 import { isLightColor, getAccessibleTextColor } from '@/utils/chartHelpers';
@@ -84,7 +85,7 @@ export default function Home() {
       </Paper>
 
       <Grid container spacing={3}>
-        {/* Our updated chart component */}
+        {/* Bar Chart */}
         <Grid item xs={12}>
           <Paper elevation={1} sx={{ p: 0, overflow: 'hidden', borderRadius: 2 }}>
             <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
@@ -97,6 +98,23 @@ export default function Home() {
             </Box>
             <Box sx={{ p: { xs: 1, md: 2 } }}>
               <FertilityBarChart showTitle={false} embedded={true} />
+            </Box>
+          </Paper>
+        </Grid>
+        
+        {/* Line Chart */}
+        <Grid item xs={12}>
+          <Paper elevation={1} sx={{ p: 0, overflow: 'hidden', borderRadius: 2, mt: 3 }}>
+            <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
+              <Typography variant="h4" gutterBottom>
+                Fertility Rate Trends Over Time
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                Analyze how fertility rates have changed over time (2008-2023) across different education levels.
+              </Typography>
+            </Box>
+            <Box sx={{ p: { xs: 1, md: 2 } }}>
+              <FertilityLineChart showTitle={false} embedded={true} />
             </Box>
           </Paper>
         </Grid>
@@ -123,6 +141,9 @@ export default function Home() {
               <Typography paragraph color="text.secondary">
                 Bar charts showing fertility rates by educational attainment, from less than high school to professional/doctorate degrees.
               </Typography>
+              <Typography variant="caption" color="success.main">
+                Available now
+              </Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -139,6 +160,9 @@ export default function Home() {
               <Typography paragraph color="text.secondary">
                 Line charts tracking fertility trends over time (2008-2023), showing how the relationship between education and fertility has evolved.
               </Typography>
+              <Typography variant="caption" color="success.main">
+                Available now
+              </Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -154,6 +178,9 @@ export default function Home() {
               </Box>
               <Typography paragraph color="text.secondary">
                 Choropleth maps displaying geographic variations in fertility rates across all 50 states and the District of Columbia.
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                Coming soon
               </Typography>
             </CardContent>
           </Card>
