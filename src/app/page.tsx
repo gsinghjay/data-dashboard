@@ -5,6 +5,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import PublicIcon from '@mui/icons-material/Public';
 import InfoIcon from '@mui/icons-material/Info';
+import FertilityBarChart from '@/components/charts/FertilityBarChart';
 
 export default function Home() {
   return (
@@ -20,6 +21,11 @@ export default function Home() {
       </Box>
 
       <Grid container spacing={3}>
+        {/* Our new chart component */}
+        <Grid item xs={12}>
+          <FertilityBarChart />
+        </Grid>
+
         {/* Visualization Placeholder */}
         <Grid item xs={12}>
           <Paper 
