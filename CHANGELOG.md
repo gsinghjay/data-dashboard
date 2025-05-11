@@ -1,6 +1,40 @@
 # CHANGELOG
 
 
+## v1.11.0 (2025-05-11)
+
+### Bug Fixes
+
+- Apply education colors to tooltip headers for better consistency
+  ([`867fe76`](https://github.com/gsinghjay/data-dashboard/commit/867fe764addfc400f04b4ef7c38aa8dd9dd6dc9d))
+
+- Ensure 2023 appears on x-axis by using explicit tick values
+  ([`928ee0f`](https://github.com/gsinghjay/data-dashboard/commit/928ee0fdd3c6d03667e1118d58d43680f149e3e2))
+
+- Ensure even spacing between x-axis ticks by using band scale
+  ([`24f6d91`](https://github.com/gsinghjay/data-dashboard/commit/24f6d9167ac5f54639cf7e241b52e5b53878507c))
+
+- Explicitly set white color for tooltip titles
+  ([`aaa4ba7`](https://github.com/gsinghjay/data-dashboard/commit/aaa4ba70d4f7135a0176937927a76d9bfbdbdc35))
+
+- Improve tooltip positioning and styling in FertilityLineChart
+  ([`b8f1027`](https://github.com/gsinghjay/data-dashboard/commit/b8f102777b7d9d795f2ca5a26c68da1c3706aca8))
+
+- Update FertilityLineChart tooltip positioning and improve chart layout
+  ([`c966190`](https://github.com/gsinghjay/data-dashboard/commit/c9661908919bf50cf7c966f5a890bac277d1037c))
+
+- Update tooltip style to match theme and FertilityBarChart component
+  ([`eeb7173`](https://github.com/gsinghjay/data-dashboard/commit/eeb7173f1bd88bc140563b23c66fbcaa9119d2fc))
+
+### Features
+
+- Add FertilityLineChart component for time-based trend visualization
+  ([`9232d12`](https://github.com/gsinghjay/data-dashboard/commit/9232d124a26919c9eebcfed1bec2119cba37cbe7))
+
+- Integrate FertilityLineChart component into home page
+  ([`db918e8`](https://github.com/gsinghjay/data-dashboard/commit/db918e8b51012bf0014156d6d34cf430f84159e9))
+
+
 ## v1.10.0 (2025-05-11)
 
 ### Features
